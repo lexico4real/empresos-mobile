@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { Slot, Stack } from "expo-router";
 import "./global.css";
 import { useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
@@ -33,5 +33,5 @@ export default function RootLayout() {
     return null;
   }
 
-  return <Stack />;
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
