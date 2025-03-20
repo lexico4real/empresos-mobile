@@ -31,6 +31,9 @@ import swim from "@/assets/icons/swim.png";
 import wifi from "@/assets/icons/wifi.png";
 import location from "@/assets/icons/location.png";
 import edit from "@/assets/icons/edit.png";
+import logo from "@/assets/icons/empresos-icon.png";
+import close from "@/assets/icons/close.png";
+import back from "@/assets/icons/back.png";
 
 export default {
   google,
@@ -66,4 +69,7 @@ export default {
   wifi,
   location,
   edit,
+  logo,
+  close,
+  back,
 };
