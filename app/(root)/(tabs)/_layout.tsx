@@ -15,7 +15,7 @@ const TabIcon = ({
   <View className="flex-1 mt-3 flex flex-col items-center">
     <Image
       source={icon}
-      tintColor={focused ? "#0061FF" : "#666876"}
+      tintColor={focused ? "#C4261A" : "#666876"}
       resizeMode="contain"
       className="size-6"
     />
@@ -38,7 +38,6 @@ const TabsLayout = () => {
         tabBarStyle: {
           backgroundColor: "white",
           position: "absolute",
-          borderTopColor: "#0061FF1A",
           borderTopWidth: 1,
           minHeight: 70,
         },
@@ -55,12 +54,12 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="bills"
         options={{
-          title: "Explore",
+          title: "Bills",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} icon={icons.search} title="Explore" />
+            <TabIcon focused={focused} icon={icons.wallet} title="Bills" />
           ),
         }}
       />
