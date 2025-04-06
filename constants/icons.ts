@@ -34,6 +34,19 @@ import edit from "@/assets/icons/edit.png";
 import logo from "@/assets/icons/empresos-icon.png";
 import close from "@/assets/icons/close.png";
 import back from "@/assets/icons/back.png";
+import sendIcon from "@/assets/icons/send-money.png";
+import settingsIcons from "@/assets/icons/settings-icon.png";
+import billsIcon from "@/assets/icons/bill-icon.png";
+import menu from "@/assets/icons/menu.png";
+import moneyBag from "@/assets/icons/money-bag.png";
+import arrowDown from "@/assets/icons/arrow-down.png";
+import plus from "@/assets/icons/plus.png";
+import contact from "@/assets/icons/contact.png";
+import padlock from "@/assets/icons/padlock.png";
+import document from "@/assets/icons/doc.png";
+import refresh from "@/assets/icons/refresh.png";
+import tax from "@/assets/icons/tax-icon.png";
+
 
 export default {
   google,
@@ -72,4 +85,16 @@ export default {
   logo,
   close,
   back,
+  sendIcon,
+  settingsIcons,
+  billsIcon,
+  menu,
+  moneyBag,
+  arrowDown,
+  plus,
+  contact,
+  padlock,
+  document,
+  refresh,
+  tax,
 };
