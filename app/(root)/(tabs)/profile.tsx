@@ -1,5 +1,7 @@
 import Header from '@/components/common/header'
+import ProfileMenuItem from '@/components/profile/profile-menu'
 import icons from '@/constants/icons'
+import images from '@/constants/images'
 import React from 'react'
 import { Image, ScrollView, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -19,7 +21,7 @@ export default function Profile() {
         {/* User Profile Section */}
         <View className='flex-row items-center mt-6 mb-8 px-8'>
           <Image
-            source={icons.person}
+            source={images.Profile}
             className='size-24 rounded-full bg-gray-100'
           />
           <View className='ml-4'>
@@ -27,6 +29,48 @@ export default function Profile() {
             <Text className='text-gray-400'>1-297-784-7430 x30167</Text>
           </View>
         </View>
+
+
+        {/* Menu Items */}
+        <ProfileMenuItem
+          icon={icons.contact}
+          title="Contact Details"
+          description="Add photos, email, phone and addresses"
+          route="ContactDetails"
+          iconColor="#e63946"
+        />
+
+        <ProfileMenuItem
+          icon={icons.settingsIcons}
+          title="Configuration"
+          description="Personalise and set up the Bank's app in this section"
+          route="Configuration"
+          iconColor="#e63946"
+        />
+
+        <ProfileMenuItem
+          icon={icons.padlock}
+          title="Security and Privacy"
+          description="You can feel totally confident about security"
+          route="SecurityPrivacy"
+          iconColor="#e63946"
+        />
+
+        <ProfileMenuItem
+          icon={icons.document}
+          title="Docubox"
+          description="All the documents we have shared between the Bank"
+          route="Docubox"
+          iconColor="#e63946"
+        />
+
+        <ProfileMenuItem
+          icon={icons.refresh}
+          title="Get your payments up to date"
+          description="manage your debts: total payments"
+          route="Payments"
+          iconColor="#e63946"
+        />
       </ScrollView>
     </SafeAreaView>
   )
