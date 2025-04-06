@@ -10,7 +10,7 @@ interface SlideItem {
 
 
 interface ProfileHeaderProps {
-  title: string
+  title?: string
   showBackArrow?: boolean
   showNotification?: boolean
   onBackPress?: () => void
