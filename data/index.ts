@@ -1,3 +1,4 @@
+import icons from "@/constants/icons";
 import images from "@/constants/images";
 
 const slides = [
@@ -52,7 +53,79 @@ const slides = [
   }
 ];
 
+const bills = [
+  {
+    id: 1,
+    title: "Bills",
+    icon: icons.billsIcon,
+    description: "Water, electricity, insurance, chamber of commerce etc"
+  },
+  {
+    id: 2,
+    title: "Taxes",
+    icon: icons.tax,
+    description: "Spanish Tax Administrative Agency"
+  }
+];
 
+const latestBills = [
+  {
+    id: 1,
+    date: '03 MAR',
+    day: 'Friday',
+    biller: 'Santander Generales',
+    description: 'Gravida a cras id quam pellentesque',
+    amount: '-$400.00',
+    status: 'APPLIED',
+  },
+  {
+    id: 2,
+    date: '03 MAR',
+    day: 'Friday',
+    biller: 'Santander Generales',
+    description: 'Gravida a cras id quam pellentesque',
+    amount: '-$400.00',
+    status: 'APPLIED',
+  },
+  {
+    id: 3,
+    date: '03 MAR',
+    day: 'Friday',
+    biller: 'Santander Generales',
+    description: 'Gravida a cras id quam pellentesque',
+    amount: '-$400.00',
+    status: 'APPLIED',
+  },
+  {
+    id: 4,
+    date: '03 MAR',
+    day: 'Friday',
+    biller: 'Santander Generales',
+    description: 'Gravida a cras id quam pellentesque',
+    amount: '-$400.00',
+    status: 'APPLIED',
+  },
+  {
+    id: 5,
+    date: '03 MAR',
+    day: 'Friday',
+    biller: 'Santander Generales',
+    description: 'Gravida a cras id quam pellentesque',
+    amount: '-$400.00',
+    status: 'APPLIED',
+  },
+  {
+    id: 6,
+    date: '03 MAR',
+    day: 'Friday',
+    biller: 'Santander Generales',
+    description: 'Gravida a cras id quam pellentesque',
+    amount: '-$400.00',
+    status: 'APPLIED',
+  },
+];
 export {
-  slides
+  slides,
+  bills,
+  latestBills
 }
