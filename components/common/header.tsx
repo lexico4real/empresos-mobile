@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, ImageSourcePropType } from 'react-native'
+import { View, Text, Image, TouchableOpacity, ImageSourcePropType, StatusBar } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import icons from '@/constants/icons'
 import { ProfileHeaderProps } from '@/config/types'
@@ -12,8 +12,9 @@ export default function Header({
   rightIcon,
   onBackPress,
   onRightPress,
-  rightComponent
-}: ProfileHeaderProps) {
+  rightComponent,
+  className = ''
+}: ProfileHeaderProps & { className?: string }) {
   const navigation = useNavigation()
 
   const handleBackPress = () => {
@@ -25,7 +26,12 @@ export default function Header({
   }
 
   return (
-    <View className='flex flex-row justify-between items-center  bg-[#f0ebe9] p-8'>
+    <View className={`flex flex-row justify-between items-center bg-[#f0ebe9] p-8 ${className}`}>
+      <StatusBar
+        backgroundColor="#f0ebe9"
+        barStyle="dark-content"
+        translucent={true}
+      />
       <View className='flex flex-row gap-3 items-center'>
         {showBackArrow && (
           <TouchableOpacity onPress={handleBackPress}>
