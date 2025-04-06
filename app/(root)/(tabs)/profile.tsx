@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Profile() {
   return (
-    <SafeAreaView className='flex-1 bg-white'>
+    <SafeAreaView className='flex-1 bg-[#f0ece9]'>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName='pb-32 '>
         <Header
           title="Personal Area"

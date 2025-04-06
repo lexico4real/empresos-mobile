@@ -11,8 +11,8 @@ import BillItem from '@/components/bills/bill-items';
 
 export default function Bills() {
   return (
-    <SafeAreaView className="flex-1 bg-white" >
-      <StatusBar backgroundColor="#f0ebe9" barStyle="dark-content" />
+    <SafeAreaView className="flex-1 bg-[#f0ece9]" >
+      <StatusBar backgroundColor="#f0ece9" barStyle="dark-content" />
 
       <Header
         title="Bills & Taxes"
