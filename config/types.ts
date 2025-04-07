@@ -20,6 +20,7 @@ interface ProfileHeaderProps {
   logo?: ImageSourcePropType
   rightIcon?: ImageSourcePropType
   onRightPress?: () => void
+  titleAlignment?: 'left' | 'center'
 }
 
 
