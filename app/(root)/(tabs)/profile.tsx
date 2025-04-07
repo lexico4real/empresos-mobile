@@ -1,5 +1,6 @@
 import Header from '@/components/common/header'
 import ProfileMenuItem from '@/components/profile/profile-menu'
+import { CONFIGURATION_URL, CONTACT_DETAILS_URL, SECURITY_URL, DOCUMENT_URL, PAYMENT_URL } from '@/config/routes'
 import icons from '@/constants/icons'
 import images from '@/constants/images'
 import React from 'react'
@@ -36,7 +37,7 @@ export default function Profile() {
           icon={icons.contact}
           title="Contact Details"
           description="Add photos, email, phone and addresses"
-          route="ContactDetails"
+          route={CONTACT_DETAILS_URL}
           iconColor="#e63946"
         />
 
@@ -44,7 +45,7 @@ export default function Profile() {
           icon={icons.settingsIcons}
           title="Configuration"
           description="Personalise and set up the Bank's app in this section"
-          route="Configuration"
+          route={CONFIGURATION_URL}
           iconColor="#e63946"
         />
 
@@ -52,7 +53,7 @@ export default function Profile() {
           icon={icons.padlock}
           title="Security and Privacy"
           description="You can feel totally confident about security"
-          route="SecurityPrivacy"
+          route={SECURITY_URL}
           iconColor="#e63946"
         />
 
@@ -60,7 +61,7 @@ export default function Profile() {
           icon={icons.document}
           title="Docubox"
           description="All the documents we have shared between the Bank"
-          route="Docubox"
+          route={DOCUMENT_URL}
           iconColor="#e63946"
         />
 
@@ -68,7 +69,7 @@ export default function Profile() {
           icon={icons.refresh}
           title="Get your payments up to date"
           description="manage your debts: total payments"
-          route="Payments"
+          route={PAYMENT_URL}
           iconColor="#e63946"
         />
       </ScrollView>

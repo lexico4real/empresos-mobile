@@ -3,6 +3,7 @@ import Header from '@/components/common/header'
 import { HOME_URL } from '@/config/routes'
 import icons from '@/constants/icons'
 import images from '@/constants/images'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { router } from 'expo-router'
 import React, { useState } from 'react'
 import { Text, View, Image, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
@@ -13,6 +14,7 @@ export default function SignIn() {
 
   const handleContinue = () => {
     // Implement your sign-in logic here
+    // AsyncStorage.removeItem('isOnboarded')
     if (personalId.trim()) {
       router.push(HOME_URL)
     }
@@ -25,6 +27,7 @@ export default function SignIn() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header
+        title="Sign In"
         showBackArrow={true}
         backArrowIcon={icons.back}
         rightIcon={icons.close}

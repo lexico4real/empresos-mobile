@@ -1,15 +1,13 @@
 import React from 'react';
 import { TouchableOpacity, Text, View, Image, ImageSourcePropType } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useRouter, Href } from 'expo-router';
 import icons from '@/constants/icons';
 
 interface ProfileMenuItemProps {
   icon: ImageSourcePropType;
   title: string;
   description: string;
-  route: string;
-  params?: object;
+  route: Href;
   iconColor?: string;
   chevronIcon?: ImageSourcePropType;
 }
@@ -19,20 +17,19 @@ export default function ProfileMenuItem({
   title,
   description,
   route,
-  params = {},
   iconColor = '#e63946',
   chevronIcon
 }: ProfileMenuItemProps) {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const router = useRouter();
 
   const handlePress = () => {
-    navigation.navigate(route, params);
+    router.push(route);
   };
 
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className="flex-row items-center py-6 px-8 border-b border-gray-100"
+      className="flex-row items-center py-6 px-8 border-b border-black/10"
     >
       <View className="mr-4">
         <Image
