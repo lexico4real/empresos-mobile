@@ -1,3 +1,5 @@
+import { TransferOption } from "@/config/types";
+import { Recipient } from "@/config/types";
 import icons from "@/constants/icons";
 import images from "@/constants/images";
 
@@ -124,8 +126,66 @@ const latestBills = [
     status: 'APPLIED',
   },
 ];
+
+
+const newFeatures = [
+  {
+    id: 1,
+    text: 'New "REVERSE FACTORING ADVANCE PAYMENTS" functionality thta you can use to easily prepay',
+  },
+  {
+    id: 2,
+    text: 'We have included direct access to the new "MY STORE" APP available for customers with POS Santander where you can compare them with your competition.',
+  },
+  {
+    id: 3,
+    text: 'We have included direct access to the new "MY STORE" APP available for customers with POS Santander where you can compare them with your competition.',
+  },
+  {
+    id: 4,
+    text: 'We have included direct access to the new "MY STORE" APP available for customers with POS Santander where you can compare them with your competition.',
+  },
+];
+
+const recipients: Recipient[] = [
+  {
+    id: '1',
+    type: 'new',
+    accountNumber: 'Transfers, transfers between accounts, salary payments',
+  },
+  {
+    id: '2',
+    type: 'recent',
+    initial: 'T',
+    accountNumber: '333***000',
+  },
+  {
+    id: '3',
+    type: 'recent',
+    initial: 'M',
+    accountNumber: '333***000',
+  },
+];
+
+const transferOptions: TransferOption[] = [
+  {
+    id: '1',
+    title: 'Transfers',
+    subtitle: 'National and International',
+  },
+  {
+    id: '2',
+    title: 'Salary and pension payment',
+    subtitle: 'National and International',
+  },
+];
+
+
 export {
   slides,
   bills,
-  latestBills
+  latestBills,
+  newFeatures,
+  recipients,
+  transferOptions
 }

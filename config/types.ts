@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from "react-native";
+import { APP_INFO_URL, CONTACT_DETAILS_URL, LANGUAGE_CONFIG_URL, DOCUMENT_URL, PAYMENT_URL, SECURITY_URL } from "./routes";
 
 interface SlideItem {
   id: number;
@@ -23,6 +24,34 @@ interface ProfileHeaderProps {
   titleAlignment?: 'left' | 'center'
 }
 
+type RouteType = typeof CONTACT_DETAILS_URL | typeof SECURITY_URL | typeof PAYMENT_URL | typeof DOCUMENT_URL | typeof LANGUAGE_CONFIG_URL | typeof APP_INFO_URL
+
+type NavigationOption = {
+  title: string
+  value?: string
+} & (
+    | {
+      hasArrow: true
+      route: RouteType
+    }
+    | {
+      toggle: true
+      state: boolean
+      onToggle: () => void
+    }
+  )
 
 
-export type { SlideItem, ProfileHeaderProps }
+type Recipient = {
+  id: string;
+  type: 'new' | 'recent';
+  initial?: string;
+  accountNumber: string;
+};
+
+type TransferOption = {
+  id: string;
+  title: string;
+  subtitle: string;
+};
+export type { SlideItem, ProfileHeaderProps, NavigationOption, RouteType, Recipient, TransferOption }

@@ -1,11 +1,14 @@
 import Header from '@/components/common/header'
+import { BILLS_URL, PROFILE_URL, SEND_MONEY_URL } from '@/config/routes'
 import icons from '@/constants/icons'
+import { useRouter } from 'expo-router'
 import React from 'react'
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Svg, Path, Circle, Line, Text as SvgText } from 'react-native-svg';
 
 export default function Index() {
+  const router = useRouter();
   return (
     <>
       <Header
@@ -52,17 +55,23 @@ export default function Index() {
 
           {/* Action Buttons */}
           <View className="flex-row justify-between mb-6">
-            <TouchableOpacity className="bg-[#e8dcd7] rounded-lg p-3 items-center w-[22%]">
+            <TouchableOpacity className="bg-[#e8dcd7] rounded-lg p-3 items-center w-[22%]"
+              onPress={() => router.push(SEND_MONEY_URL)}
+            >
               <Image source={icons.sendIcon} className="w-6 h-6 mb-2" />
               <Text className="text-xs text-center text-gray-800">Send money</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="bg-[#e8dcd7] rounded-lg p-3 items-center w-[22%]">
+            <TouchableOpacity className="bg-[#e8dcd7] rounded-lg p-3 items-center w-[22%]"
+              onPress={() => router.push(PROFILE_URL)}
+            >
               <Image source={icons.settingsIcons} className="w-6 h-6 mb-2" />
               <Text className="text-xs text-center text-gray-800">Personal area</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="bg-[#e8dcd7] rounded-lg p-3 items-center w-[22%]">
+            <TouchableOpacity className="bg-[#e8dcd7] rounded-lg p-3 items-center w-[22%]"
+              onPress={() => router.push(BILLS_URL)}
+            >
               <Image source={icons.billsIcon} className="w-6 h-6 mb-2" />
               <Text className="text-xs text-center text-gray-800">View bills</Text>
             </TouchableOpacity>

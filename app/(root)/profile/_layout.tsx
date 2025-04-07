@@ -23,13 +23,25 @@ export default function ProfileLayout() {
         }}
       />
       <Stack.Screen
-        name="docubox"
+        name="document"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name="payments"
+        name="payment"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="app-info"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="language-configuration"
         options={{
           headerShown: false,
         }}

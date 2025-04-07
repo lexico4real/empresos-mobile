@@ -46,6 +46,9 @@ import padlock from "@/assets/icons/padlock.png";
 import document from "@/assets/icons/doc.png";
 import refresh from "@/assets/icons/refresh.png";
 import tax from "@/assets/icons/tax-icon.png";
+import languageIcon from "@/assets/icons/lang-icon.png";
+import cloudIcon from "@/assets/icons/cloud.png";
+import moneyIcon from "@/assets/icons/money.png";
 
 
 export default {
@@ -97,4 +100,7 @@ export default {
   document,
   refresh,
   tax,
+  languageIcon,
+  cloudIcon,
+  moneyIcon,
 };
