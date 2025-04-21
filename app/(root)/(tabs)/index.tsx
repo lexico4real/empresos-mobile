@@ -5,10 +5,11 @@ import { useRouter } from 'expo-router'
 import React from 'react'
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Svg, Path, Circle, Line, Text as SvgText } from 'react-native-svg';
+import { Circle, Line, Path, Svg, Text as SvgText } from 'react-native-svg'
 
 export default function Index() {
   const router = useRouter();
+
   return (
     <>
       <Header
