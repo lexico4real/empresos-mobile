@@ -1,10 +1,11 @@
-import { Slot, Stack, router } from "expo-router";
-import "./global.css";
-import { useEffect, useState } from "react";
-import * as SplashScreen from "expo-splash-screen";
-import { View } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SIGN_OPTION_URL } from '@/config/routes';
+import { AuthProvider } from "@/context/auth-context";
+import TanstackProvider from "@/context/tanstack-provider";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Slot, router } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect, useState } from "react";
+import "./global.css";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -57,5 +58,9 @@ export default function RootLayout() {
     return null;
   }
 
-  return <Slot />;
+  return <TanstackProvider>
+    <AuthProvider>
+      <Slot />
+    </AuthProvider>
+  </TanstackProvider>;
 }
