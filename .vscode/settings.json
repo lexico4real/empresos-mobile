@@ -1,3 +1,18 @@
 {
-   "cSpell.words": ["Empresas", "empresos", "Personalise", "Undrawn"]
+   "cSpell.words": [
+      "Docubox",
+      "Empresas",
+      "empresos",
+      "Personalise",
+      "Undrawn"
+   ],
+   "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+   },
+   "eslint.workingDirectories": [
+      {
+         "mode": "auto"
+      }
+   ]
 }
