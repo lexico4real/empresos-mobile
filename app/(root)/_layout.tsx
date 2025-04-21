@@ -1,5 +1,6 @@
 import { HOME_URL, SIGN_IN_URL } from '@/config/routes';
 import { useAuth } from '@/context/auth-context';
+import { authService } from '@/services/auth.service';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
@@ -20,6 +21,12 @@ export default function RootLayout() {
       router.replace(SIGN_IN_URL);
     }
   }, [isAuthenticated, isLoading, segments]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      authService.loadToken();
+    }
+  }, [isAuthenticated]);
 
   if (isLoading) {
     return (
