@@ -5,7 +5,7 @@ import amicoPng from "@/assets/images/amico.png";
 import amicoSvg from "@/assets/images/amico.svg";
 import SliderImage1 from "@/assets/images/slider-screen-1.png";
 import Profile from "@/assets/images/profile.png";
-
+import LadyWithPhone from "@/assets/images/lady-with-phone.png";
 
 
 
@@ -17,4 +17,5 @@ export default {
   amicoSvg,
   SliderImage1,
   Profile,
+  LadyWithPhone,
 };

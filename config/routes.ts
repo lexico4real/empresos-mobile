@@ -1,6 +1,7 @@
 const SIGN_IN_URL = "/auth/sign-in";
 const SIGN_UP_URL = "/auth/sign-up";
 const SIGN_OPTION_URL = "/auth/sign-option";
+const OTP_URL = "/auth/otp";
 const HOME_URL = "/(root)/(tabs)";
 const PROFILE_URL = "/profile";
 const BILLS_URL = "/bills";
@@ -18,6 +19,7 @@ export {
   SIGN_IN_URL,
   SIGN_UP_URL,
   SIGN_OPTION_URL,
+  OTP_URL,
   PROFILE_URL,
   HOME_URL,
   BILLS_URL,

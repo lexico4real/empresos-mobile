@@ -26,7 +26,7 @@ export default function Button({
   className = '',
   textClassName = '',
 }: ButtonProps) {
-  const baseStyles = 'w-full h-14 rounded-md justify-center items-center';
+  const baseStyles = 'w-full h-14 rounded-md justify-center items-center rounded-full';
   const variantStyles = {
     primary: 'bg-primary-300',
     secondary: 'bg-gray-100',

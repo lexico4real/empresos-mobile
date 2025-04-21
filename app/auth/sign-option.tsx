@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SIGN_IN_URL, SIGN_UP_URL } from '@/config/routes';
 import images from '@/constants/images';
@@ -9,9 +8,19 @@ export default function SignOption() {
   const router = useRouter();
 
   return (
-    <SafeAreaView className="flex-1 bg-black">
-      <View className="flex-1 px-5 justify-center">
-        <Image source={images.empresosIconWhite} className='w-32 h-32 mx-auto my-12' />
+    <ImageBackground
+      source={images.LadyWithPhone}
+      className='flex-1 px-8'
+      resizeMode="cover"
+    >
+      {/* Black overlay */}
+      <View className="absolute inset-0 bg-black/80" />
+
+      <View className="flex-1 justify-center relative">
+        <Image
+          source={images.empresosIconWhite}
+          className='w-32 h-32 mx-auto my-12'
+        />
         <View className="mb-20">
           {/* <Text className="text-white text-4xl font-bold mb-16">YOU ARE{'\n'}WELCOME</Text> */}
 
@@ -35,6 +44,6 @@ export default function SignOption() {
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </ImageBackground>
   );
 }

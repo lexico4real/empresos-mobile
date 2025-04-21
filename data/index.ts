@@ -180,6 +180,17 @@ const transferOptions: TransferOption[] = [
   },
 ];
 
+const SECURITY_QUESTIONS = [
+  { label: 'What is your mother\'s maiden name?', value: 'mother_maiden_name' },
+  { label: 'What was the name of your first pet?', value: 'first_pet' },
+  { label: 'What was your first car?', value: 'first_car' },
+  { label: 'What elementary school did you attend?', value: 'elementary_school' },
+  { label: 'What is the name of the town where you were born?', value: 'birth_town' },
+  { label: 'What is your favorite movie?', value: 'favorite_movie' },
+  { label: 'What was your childhood nickname?', value: 'childhood_nickname' },
+  { label: 'What is the name of your favorite childhood friend?', value: 'childhood_friend' },
+]
+
 
 export {
   slides,
@@ -187,5 +198,6 @@ export {
   latestBills,
   newFeatures,
   recipients,
-  transferOptions
+  transferOptions,
+  SECURITY_QUESTIONS
 }
