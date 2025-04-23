@@ -5,6 +5,7 @@ import icons from '@/constants/icons'
 import images from '@/constants/images'
 import { useAuth } from '@/context/auth-context'
 import { authService } from '@/services/auth.service'
+import { useUserStore } from '@/store/userStore'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
@@ -13,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 export default function Profile() {
   const { setIsAuthenticated } = useAuth()
   const router = useRouter()
+  const { user } = useUserStore()
 
   const handleSignOut = async () => {
     await authService.signOut()
@@ -39,8 +41,8 @@ export default function Profile() {
               className='size-24 rounded-full bg-gray-100'
             />
             <View className='ml-4'>
-              <Text className='text-lg font-bold'>Iris Schamberger</Text>
-              <Text className='text-gray-400'>1-297-784-7430 x30167</Text>
+              <Text className='text-lg font-bold'>{user?.firstName} {user?.lastName}</Text>
+              <Text className='text-gray-400'>{user?.phoneNumber}</Text>
             </View>
           </View>
 
