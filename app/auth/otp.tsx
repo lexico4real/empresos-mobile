@@ -88,7 +88,7 @@ export default function Otp() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1 "
       >
-        <View className="flex-1 px-5 justify-center">
+        <View className="flex-1 px-5 justify-center bg-white">
           <View className="mt-12">
             <Text className="text-2xl font-semibold text-center mb-2">
               Enter Verification Code
