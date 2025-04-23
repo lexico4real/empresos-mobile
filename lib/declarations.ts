@@ -20,4 +20,16 @@ type SignInData = {
   secret: string
 }
 
-export type { SignUpFormData, PostOtpData, SignInData }
+type PostIntlTransactionData = {
+  senderAccount: string
+  senderName: string
+  receiverAccount: string
+  receiverBankName: string
+  receiverBankSwiftCode: string
+  receiverName: string
+  receiverCountry: string
+  currency: string
+  amount: number
+}
+
+export type { PostIntlTransactionData, PostOtpData, SignInData, SignUpFormData }

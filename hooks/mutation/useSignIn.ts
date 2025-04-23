@@ -2,6 +2,7 @@ import { HOME_URL } from "@/config/routes"
 import { useAuth } from "@/context/auth-context"
 import { SignInData } from "@/lib/declarations"
 import { authService } from "@/services/auth.service"
+import { useUserStore } from "@/store/userStore"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "expo-router"
@@ -11,6 +12,7 @@ const useSignIn = () => {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { setIsAuthenticated } = useAuth()
+  const { setUser, setAccessToken } = useUserStore()
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: SignInData) => {
@@ -18,6 +20,10 @@ const useSignIn = () => {
     },
     onSuccess: (response) => {
       if (response.data?.accessToken) {
+        console.log('data', response.data)
+        // Save user data to store
+        setUser(response.data)
+        setAccessToken(response.data.accessToken)
         setIsAuthenticated(true)
         router.push(HOME_URL)
         AsyncStorage.removeItem('userSecret')
