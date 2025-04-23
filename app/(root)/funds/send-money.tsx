@@ -1,13 +1,14 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import icons from '@/constants/icons';
 import Header from '@/components/common/header';
 import { Recipient, TransferOption } from '@/config/types';
+import icons from '@/constants/icons';
 import { recipients, transferOptions } from '@/data';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SendMoney() {
-
+  const router = useRouter();
 
   const renderRecipient = ({ item }: { item: Recipient }) => {
     if (item.type === 'new') {
@@ -21,6 +22,7 @@ export default function SendMoney() {
             shadowRadius: 2,
             elevation: 1,
           }}
+          onPress={() => router.push('/funds/transfer-options')}
         >
           <View className='w-12 h-12 bg-[#137E84] rounded-full items-center justify-center mb-2'>
             <Text className='text-white text-2xl'>+</Text>
