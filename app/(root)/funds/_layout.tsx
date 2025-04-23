@@ -3,13 +3,17 @@ import React from 'react';
 
 export default function FundsLayout() {
   return (
-    <Stack>
+    <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen
         name="send-money"
-        options={{
-          headerShown: false,
-        }}
       />
+      <Stack.Screen
+        name="transfer-options"
+      />
+      <Stack.Screen
+        name="transfers"
+      />
+
     </Stack>
   );
 } 
