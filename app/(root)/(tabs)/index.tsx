@@ -1,6 +1,7 @@
 import Header from '@/components/common/header'
 import { BILLS_URL, PROFILE_URL, SEND_MONEY_URL } from '@/config/routes'
 import icons from '@/constants/icons'
+import { useUserStore } from '@/store/userStore'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
@@ -9,6 +10,9 @@ import { Circle, Line, Path, Svg, Text as SvgText } from 'react-native-svg'
 
 export default function Index() {
   const router = useRouter();
+  const { user } = useUserStore()
+
+  const greeting = user?.firstName ? `Hello, ${user?.firstName}!` : 'Hello!';
 
   return (
     <>
@@ -21,7 +25,10 @@ export default function Index() {
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {/* Greeting */}
           <View className="mt-2 mb-4">
-            <Text className="text-2xl font-bold text-gray-800">Hello Debs!</Text>
+            <Text className="text-2xl font-bold text-gray-800">{greeting}</Text>
+            <Text className="text-sm text-gray-600 mt-1">
+              Balance: {user?.accounts[0].balance}
+            </Text>
             <Text className="text-sm text-gray-600 mt-1">Your finances are looking good</Text>
           </View>
 
