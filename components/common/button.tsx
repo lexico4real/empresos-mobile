@@ -1,7 +1,6 @@
 import { cn } from '@/lib/utils';
-import React from 'react';
-import { TouchableOpacity, Text, ActivityIndicator, View } from 'react-native';
-
+import React, { useRef } from 'react';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 
 interface ButtonProps {
   onPress?: () => void;
@@ -13,6 +12,12 @@ interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'outline';
   className?: string;
   textClassName?: string;
+  accessibilityLabel?: string;
+  testID?: string;
+  fullWidth?: boolean;
+  size?: 'small' | 'medium' | 'large';
+  icon?: React.ReactNode;
+  iconPosition?: 'left' | 'right';
 }
 
 export default function Button({
@@ -25,8 +30,22 @@ export default function Button({
   variant = 'primary',
   className = '',
   textClassName = '',
+  accessibilityLabel,
+  testID,
+  fullWidth = true,
+  size = 'medium',
+  icon,
+  iconPosition = 'left',
 }: ButtonProps) {
-  const baseStyles = 'w-full h-14 rounded-md justify-center items-center rounded-full';
+  const buttonRef = useRef<View>(null);
+
+  const sizeStyles = {
+    small: 'h-10',
+    medium: 'h-14',
+    large: 'h-16',
+  };
+
+  const baseStyles = `${fullWidth ? 'w-full' : ''} ${sizeStyles[size]} rounded-md justify-center items-center rounded-full`;
   const variantStyles = {
     primary: 'bg-primary-300',
     secondary: 'bg-gray-100',
@@ -41,9 +60,16 @@ export default function Button({
 
   const isDisabled = disabled || loading;
 
+  const handlePress = () => {
+    if (!isDisabled && onPress) {
+      onPress();
+    }
+  };
+
   return (
     <TouchableOpacity
-      onPress={onPress}
+      ref={buttonRef}
+      onPress={handlePress}
       disabled={isDisabled}
       className={cn(
         baseStyles,
@@ -51,6 +77,11 @@ export default function Button({
         isDisabled && 'opacity-50',
         className
       )}
+      accessible={true}
+      accessibilityLabel={accessibilityLabel || (typeof children === 'string' ? children : 'Button')}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: isDisabled }}
+      testID={testID}
     >
       {loading ? (
         <View className="flex-row items-center space-x-2 gap-2">
@@ -66,15 +97,19 @@ export default function Button({
           </Text>
         </View>
       ) : (
-        <Text
-          className={cn(
-            'text-base font-semibold',
-            textStyles[variant],
-            textClassName
-          )}
-        >
-          {children}
-        </Text>
+        <View className="flex-row items-center justify-center space-x-2">
+          {icon && iconPosition === 'left' && icon}
+          <Text
+            className={cn(
+              'text-base font-semibold',
+              textStyles[variant],
+              textClassName
+            )}
+          >
+            {children}
+          </Text>
+          {icon && iconPosition === 'right' && icon}
+        </View>
       )}
     </TouchableOpacity>
   );

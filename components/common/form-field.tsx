@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { StyleProp, Text, TextInput, TextInputProps, TextStyle, View, ViewStyle } from 'react-native';
-
+import React, { useRef, useState } from 'react';
+import { NativeSyntheticEvent, StyleProp, Text, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, View, ViewStyle } from 'react-native';
 
 interface FormFieldProps extends Omit<TextInputProps, 'onChangeText'> {
   title: string;
@@ -9,7 +8,14 @@ interface FormFieldProps extends Omit<TextInputProps, 'onChangeText'> {
   handleChangeText: (text: string) => void;
   otherStyles?: StyleProp<ViewStyle>;
   inputStyles?: StyleProp<TextStyle>;
-  isPassword?: boolean; // Optional prop for password fields
+  isPassword?: boolean;
+  required?: boolean;
+  error?: string;
+  helperText?: string;
+  accessibilityLabel?: string;
+  testID?: string;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -20,16 +26,58 @@ const FormField: React.FC<FormFieldProps> = ({
   otherStyles,
   inputStyles,
   isPassword = false,
+  required = false,
+  error,
+  helperText,
+  accessibilityLabel,
+  testID,
+  leftIcon,
+  rightIcon,
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<TextInput>(null);
+
+  const handleFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+    setIsFocused(true);
+    if (props.onFocus) {
+      props.onFocus(e);
+    }
+  };
+
+  const handleBlur = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+    setIsFocused(false);
+    if (props.onBlur) {
+      props.onBlur(e);
+    }
+  };
 
   return (
     <View style={[{ marginBottom: 16 }, otherStyles]}>
-      <Text className="text-base text-gray-600 font-pmedium mb-2">{title}</Text>
+      <Text
+        className="text-base text-gray-600 font-pmedium mb-2"
+        accessible={true}
+        accessibilityRole="text"
+      >
+        {title}
+        {required && <Text className="text-red-500"> *</Text>}
+      </Text>
 
-      <View className="border-2 border-gray-200 w-full h-16 px-4 bg-gray-100 rounded-2xl focus:border-secondary items-center flex-row">
+      <View
+        className={`flex-row items-center border-2 ${error ? 'border-red-500' : isFocused ? 'border-blue-500' : 'border-gray-200'
+          } w-full h-16 px-4 bg-gray-100 rounded-2xl focus:border-secondary items-center`}
+        accessible={true}
+        accessibilityLabel={accessibilityLabel || title}
+        testID={testID}
+      >
+        {leftIcon && (
+          <View className="mr-2">
+            {leftIcon}
+          </View>
+        )}
         <TextInput
+          ref={inputRef}
           className="flex-1 text-black font-psemibold text-base"
           style={inputStyles}
           value={value}
@@ -37,19 +85,40 @@ const FormField: React.FC<FormFieldProps> = ({
           placeholderTextColor="#7B7B8B"
           onChangeText={handleChangeText}
           secureTextEntry={isPassword && !showPassword}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          accessible={true}
+          accessibilityLabel={`${title} input field`}
+          accessibilityRole="text"
+          accessibilityState={{ disabled: props.editable === false }}
           {...props}
         />
-
-        {/* {isPassword && (
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Image
-              source={!showPassword ? icons.eye : icons.eyeHide} // Assuming these icons exist
-              className="w-6 h-6"
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        )} */}
+        {rightIcon && (
+          <View className="ml-2">
+            {rightIcon}
+          </View>
+        )}
       </View>
+
+      {helperText && !error && (
+        <Text
+          className="text-gray-500 text-sm mt-1"
+          accessible={true}
+          accessibilityRole="text"
+        >
+          {helperText}
+        </Text>
+      )}
+
+      {error && (
+        <Text
+          className="text-red-500 text-sm mt-1"
+          accessible={true}
+          accessibilityRole="alert"
+        >
+          {error}
+        </Text>
+      )}
     </View>
   );
 };
