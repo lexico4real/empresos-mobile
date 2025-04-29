@@ -1,7 +1,7 @@
-import React from 'react';
-import { TouchableOpacity, Text, View, Image, ImageSourcePropType } from 'react-native';
-import { useRouter, Href } from 'expo-router';
 import icons from '@/constants/icons';
+import { Href, useRouter } from 'expo-router';
+import React, { useRef } from 'react';
+import { Image, ImageSourcePropType, Text, TouchableOpacity, View } from 'react-native';
 
 interface ProfileMenuItemProps {
   icon: ImageSourcePropType;
@@ -10,6 +10,11 @@ interface ProfileMenuItemProps {
   route: Href;
   iconColor?: string;
   chevronIcon?: ImageSourcePropType;
+  accessibilityLabel?: string;
+  testID?: string;
+  isActive?: boolean;
+  badge?: string | number;
+  onPress?: () => void;
 }
 
 export default function ProfileMenuItem({
@@ -17,37 +22,91 @@ export default function ProfileMenuItem({
   title,
   description,
   route,
-  iconColor = '#e63946',
-  chevronIcon
+  iconColor = '#C33A31',
+  chevronIcon = icons.rightArrow,
+  accessibilityLabel,
+  testID,
+  isActive = true,
+  badge,
+  onPress,
 }: ProfileMenuItemProps) {
   const router = useRouter();
+  const itemRef = useRef<View>(null);
 
   const handlePress = () => {
-    router.push(route);
+    if (onPress) {
+      onPress();
+    } else {
+      router.push(route);
+    }
   };
 
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className="flex-row items-center py-6 px-8 border-b border-black/10"
+      disabled={!isActive}
+      className={`flex-row items-center justify-between p-4 border-b border-gray-100 ${!isActive ? 'opacity-50' : ''
+        }`}
+      accessible={true}
+      accessibilityLabel={accessibilityLabel || `${title} menu item`}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !isActive }}
+      testID={testID}
     >
-      <View className="mr-4">
-        <Image
-          source={icon}
-          className="w-7 h-7"
-          style={{ tintColor: iconColor }}
-        />
+      <View
+        className="flex-row items-center flex-1"
+        ref={itemRef}
+      >
+        <View
+          className="w-10 h-10 rounded-full items-center justify-center mr-4"
+          style={{ backgroundColor: `${iconColor}20` }}
+        >
+          <Image
+            source={icon}
+            className="w-5 h-5"
+            style={{ tintColor: iconColor }}
+            resizeMode="contain"
+            accessible={true}
+            accessibilityLabel={`${title} icon`}
+          />
+        </View>
+        <View className="flex-1">
+          <View className="flex-row items-center">
+            <Text
+              className="text-base font-semibold text-gray-800"
+              accessible={true}
+              accessibilityRole="text"
+            >
+              {title}
+            </Text>
+            {badge && (
+              <View className="bg-primary-100 px-2 py-0.5 rounded-full ml-2">
+                <Text
+                  className="text-primary-600 text-xs font-medium"
+                  accessible={true}
+                  accessibilityRole="text"
+                >
+                  {badge}
+                </Text>
+              </View>
+            )}
+          </View>
+          <Text
+            className="text-gray-500 text-sm mt-1"
+            accessible={true}
+            accessibilityRole="text"
+          >
+            {description}
+          </Text>
+        </View>
       </View>
-
-      <View className="flex-1">
-        <Text className="text-lg font-semibold text-gray-800">{title}</Text>
-        <Text className="text-sm text-gray-500 mt-1">{description}</Text>
-      </View>
-
       <Image
-        source={chevronIcon || icons.rightArrow}
+        source={chevronIcon}
         className="w-5 h-5"
-        style={{ tintColor: '#CCCCCC' }}
+        style={{ tintColor: '#9CA3AF' }}
+        resizeMode="contain"
+        accessible={true}
+        accessibilityLabel="Navigate"
       />
     </TouchableOpacity>
   );
