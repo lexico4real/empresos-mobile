@@ -1,4 +1,5 @@
 import Header from '@/components/common/header'
+import ThreeMonthLineChart from '@/components/common/three-month-line-chart'
 import { BILLS_URL, PROFILE_URL, SEND_MONEY_URL } from '@/config/routes'
 import icons from '@/constants/icons'
 import { useUserStore } from '@/store/userStore'
@@ -6,7 +7,6 @@ import { useRouter } from 'expo-router'
 import React from 'react'
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Circle, Line, Path, Svg, Text as SvgText } from 'react-native-svg'
 
 export default function Index() {
   const router = useRouter();
@@ -37,28 +37,9 @@ export default function Index() {
             <Text className="text-base font-bold text-gray-800 mb-4">CURRENT ACCOUNTS</Text>
 
             {/* Simple line graph representation */}
-            <View className="h-32">
-              <Svg height="100%" width="100%" viewBox="0 0 300 100">
-                <Line x1="0" y1="90" x2="300" y2="90" stroke="#333" strokeWidth="1" />
-                <SvgText x="20" y="110" fontSize="12" fill="#333">Total balance</SvgText>
-                <SvgText x="120" y="110" fontSize="12" fill="#333">OCT</SvgText>
-                <SvgText x="200" y="110" fontSize="12" fill="#333">NOV</SvgText>
-                <SvgText x="280" y="110" fontSize="12" fill="#333">DEC</SvgText>
-
-                {/* Line graph */}
-                <Path
-                  d="M20,50 L100,20 L180,40 L240,30 L300,80"
-                  fill="none"
-                  stroke="#2D8A78"
-                  strokeWidth="2"
-                />
-                <Circle cx="20" cy="50" r="3" fill="white" stroke="#2D8A78" strokeWidth="1" />
-                <Circle cx="100" cy="20" r="3" fill="white" stroke="#2D8A78" strokeWidth="1" />
-                <Circle cx="180" cy="40" r="3" fill="white" stroke="#2D8A78" strokeWidth="1" />
-                <Circle cx="240" cy="30" r="3" fill="white" stroke="#2D8A78" strokeWidth="1" />
-                <Circle cx="300" cy="80" r="3" fill="white" stroke="#2D8A78" strokeWidth="1" />
-              </Svg>
-            </View>
+            <ThreeMonthLineChart
+              data={[1100, 1500, 1200]}
+            />
           </View>
 
           {/* Action Buttons */}
@@ -82,6 +63,12 @@ export default function Index() {
             >
               <Image source={icons.billsIcon} className="w-6 h-6 mb-2" />
               <Text className="text-xs text-center text-gray-800">View bills</Text>
+            </TouchableOpacity>
+            <TouchableOpacity className="bg-[#e8dcd7] rounded-lg p-3 items-center w-[22%]"
+              onPress={() => router.push(BILLS_URL)}
+            >
+              <Image source={icons.billsIcon} className="w-6 h-6 mb-2" />
+              <Text className="text-xs text-center text-gray-800">Explore Products</Text>
             </TouchableOpacity>
           </View>
 
