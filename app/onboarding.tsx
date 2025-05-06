@@ -1,15 +1,15 @@
-import { SIGN_IN_URL, SIGN_OPTION_URL } from '@/config/routes';
-import images from '@/constants/images';
-import { router, useNavigation } from 'expo-router';
-import React, { useRef, useState } from 'react';
-import { Text, View, TouchableOpacity, Dimensions, Animated, Image, StatusBar, Platform, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { slides } from '@/data';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SlideItem } from '@/config/types';
+import { SIGN_OPTION_URL } from '@/config/routes';
 
-const { width, height } = Dimensions.get('window');
+import { SlideItem } from '@/config/types';
+import { slides } from '@/data';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
+import React, { useRef, useState } from 'react';
+import { Dimensions, FlatList, Image, Platform, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const { width } = Dimensions.get('window');
 
 const Slide = ({ item, currentIndex, totalSlides, onNext, onPrev, onSkip }: {
   item: SlideItem;
@@ -99,7 +99,6 @@ const Slide = ({ item, currentIndex, totalSlides, onNext, onPrev, onSkip }: {
 
 export default function Onboarding() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const navigation = useNavigation();
   const flatListRef = useRef<FlatList>(null);
 
   const goToNextSlide = () => {

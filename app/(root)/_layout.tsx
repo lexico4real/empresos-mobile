@@ -20,7 +20,7 @@ export default function RootLayout() {
     } else if (!isAuthenticated && !inAuthGroup) {
       router.replace(SIGN_IN_URL);
     }
-  }, [isAuthenticated, isLoading, segments]);
+  }, [isAuthenticated, isLoading, segments, router]);
 
   useEffect(() => {
     if (isAuthenticated) {

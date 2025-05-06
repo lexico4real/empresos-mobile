@@ -1,14 +1,11 @@
-import React, { useState } from 'react'
-import { SafeAreaView, ScrollView, View, Text } from 'react-native'
-import { Link } from 'expo-router'
 import Button from '@/components/common/button'
 import TextInput from '@/components/common/text-input'
-import Select from '@/components/common/select'
-import { z } from 'zod'
 import { SIGN_IN_URL } from '@/config/routes'
-import useSignUp from '@/hooks/mutation/useSignUp'
-import { SECURITY_QUESTIONS } from '@/data'
 import useOnboardCustomer from '@/hooks/mutation/useOnboardCustomer'
+import { Link } from 'expo-router'
+import React, { useState } from 'react'
+import { SafeAreaView, ScrollView, Text, View } from 'react-native'
+import { z } from 'zod'
 // Validation schema
 const signUpSchema = z.object({
   email: z

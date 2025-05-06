@@ -82,8 +82,8 @@ export default function AmountScreen() {
 
     try {
       showModal('loading', 'Processing transaction...');
-      await handlePostIntlTransaction(payload);
-    } catch (error) {
+      handlePostIntlTransaction(payload);
+    } catch {
       showModal('error');
     }
   };

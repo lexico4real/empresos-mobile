@@ -16,8 +16,6 @@ export default function ThreeMonthLineChart({
   className = '',
 }: LineChartProps) {
   // Responsive width/height (fill parent)
-  const SVG_WIDTH = 1; // 100% (relative)
-  const SVG_HEIGHT = 1; // 100% (relative)
   const VIEWBOX_WIDTH = 300;
   const VIEWBOX_HEIGHT = 100;
 
@@ -38,7 +36,7 @@ export default function ThreeMonthLineChart({
   const path = `M${xPositions[0]},${yPositions[0]} L${xPositions[1]},${yPositions[1]} L${xPositions[2]},${yPositions[2]}`;
 
   return (
-    <View className={`w-full h-32 rounded-xl p-0 ${className}`}> {/* Card background and rounded corners */}
+    <View className={`w-full h-32 rounded-xl p-0 ${className}`}>
       <Svg
         className="w-full h-full"
         width="100%"
@@ -74,7 +72,7 @@ export default function ThreeMonthLineChart({
               fill="#2D8A78"
               textAnchor="middle"
             >
-              {`${typeof data[i] === 'number' ? data[i].toLocaleString() : data[i]}€`}
+              {`${data[i].toLocaleString()}€`}
             </SvgText>
           </React.Fragment>
         ))}

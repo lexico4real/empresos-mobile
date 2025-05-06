@@ -1,5 +1,5 @@
-import { ImageSourcePropType } from "react-native";
-import { APP_INFO_URL, CONTACT_DETAILS_URL, LANGUAGE_CONFIG_URL, DOCUMENT_URL, PAYMENT_URL, SECURITY_URL } from "./routes";
+import { ImageSourcePropType, StyleProp, TextInputProps, TextStyle, ViewStyle } from "react-native";
+import { APP_INFO_URL, CONTACT_DETAILS_URL, DOCUMENT_URL, LANGUAGE_CONFIG_URL, PAYMENT_URL, SECURITY_URL } from "./routes";
 
 interface SlideItem {
   id: number;
@@ -54,4 +54,24 @@ type TransferOption = {
   title: string;
   subtitle: string;
 };
-export type { SlideItem, ProfileHeaderProps, NavigationOption, RouteType, Recipient, TransferOption }
+
+
+interface FormFieldProps extends Omit<TextInputProps, 'onChangeText'> {
+  title: string;
+  value: string;
+  placeholder?: string;
+  handleChangeText: (text: string) => void;
+  otherStyles?: StyleProp<ViewStyle>;
+  inputStyles?: StyleProp<TextStyle>;
+  isPassword?: boolean;
+  required?: boolean;
+  error?: string;
+  helperText?: string;
+  accessibilityLabel?: string;
+  testID?: string;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+}
+
+
+export type { FormFieldProps, NavigationOption, ProfileHeaderProps, Recipient, RouteType, SlideItem, TransferOption };

@@ -1,7 +1,7 @@
 import Header from '@/components/common/header'
 import icons from '@/constants/icons'
 import React from 'react'
-import { View, Text, Image, TouchableOpacity } from 'react-native'
+import { Image, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function ContactDetails() {

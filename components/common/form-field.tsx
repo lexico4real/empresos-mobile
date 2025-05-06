@@ -1,22 +1,7 @@
+import { FormFieldProps } from '@/config/types';
+import { Eye, EyeOff } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
-import { NativeSyntheticEvent, StyleProp, Text, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, View, ViewStyle } from 'react-native';
-
-interface FormFieldProps extends Omit<TextInputProps, 'onChangeText'> {
-  title: string;
-  value: string;
-  placeholder?: string;
-  handleChangeText: (text: string) => void;
-  otherStyles?: StyleProp<ViewStyle>;
-  inputStyles?: StyleProp<TextStyle>;
-  isPassword?: boolean;
-  required?: boolean;
-  error?: string;
-  helperText?: string;
-  accessibilityLabel?: string;
-  testID?: string;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
-}
+import { NativeSyntheticEvent, Text, TextInput, TextInputFocusEventData, TouchableOpacity, View } from 'react-native';
 
 const FormField: React.FC<FormFieldProps> = ({
   title,
@@ -78,7 +63,7 @@ const FormField: React.FC<FormFieldProps> = ({
         )}
         <TextInput
           ref={inputRef}
-          className="flex-1 text-black font-psemibold text-base"
+          className="flex-1 text-black font-semibold text-base"
           style={inputStyles}
           value={value}
           placeholder={placeholder}
@@ -93,7 +78,22 @@ const FormField: React.FC<FormFieldProps> = ({
           accessibilityState={{ disabled: props.editable === false }}
           {...props}
         />
-        {rightIcon && (
+        {isPassword && (
+          <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            className="ml-2"
+            accessible={true}
+            accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+            accessibilityRole="button"
+          >
+            {showPassword ? (
+              <EyeOff size={24} color="#7B7B8B" />
+            ) : (
+              <Eye size={24} color="#7B7B8B" />
+            )}
+          </TouchableOpacity>
+        )}
+        {rightIcon && !isPassword && (
           <View className="ml-2">
             {rightIcon}
           </View>
