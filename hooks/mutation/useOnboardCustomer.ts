@@ -25,7 +25,6 @@ const useOnboardCustomer = () => {
 
     },
     onError: (error: { response: { data: { message: string } } }) => {
-      console.error(error)
       Alert.alert('Error', error.response.data.message ?? 'Failed to onboard customer. Please try again.')
     }
   })

@@ -1,10 +1,10 @@
 import { OTP_URL } from "@/config/routes"
 import api from "@/lib/api"
 import { PostOtpData } from "@/lib/declarations"
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "expo-router"
 import { Alert } from "react-native"
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const usePostOtp = () => {
   const router = useRouter()
@@ -21,7 +21,6 @@ const usePostOtp = () => {
       }
     },
     onError: (error: { response: { data: { message: string } } }) => {
-      console.error(error)
       Alert.alert('Error', error.response.data.message ?? 'Failed to onboard customer. Please try again.')
     }
   })

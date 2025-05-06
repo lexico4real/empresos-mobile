@@ -32,7 +32,6 @@ const useSignIn = () => {
       }
     },
     onError: (error: { response: { data: { message: string } } }) => {
-      console.error(error)
       Alert.alert('Error', error?.response?.data?.message ?? 'Failed to sign in. Please try again.')
     }
   })

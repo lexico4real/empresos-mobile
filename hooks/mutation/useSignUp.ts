@@ -25,7 +25,6 @@ const useSignUp = () => {
 
     },
     onError: (error: { response: { data: { message: string } } }) => {
-      console.error(error)
       Alert.alert('Error', error.response.data.message)
     }
   })
