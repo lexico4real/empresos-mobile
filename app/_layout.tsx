@@ -10,15 +10,6 @@ import "./global.css";
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
-// Development only: Function to clear onboarding status
-const clearOnboardingStatus = async () => {
-  try {
-    await AsyncStorage.removeItem('isOnboarded');
-    console.log('Onboarding status cleared');
-  } catch (error) {
-    console.error('Error clearing onboarding status:', error);
-  }
-};
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
