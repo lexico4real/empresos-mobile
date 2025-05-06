@@ -6,7 +6,7 @@ import useSignIn from '@/hooks/mutation/useSignIn';
 import { SignInData } from '@/lib/declarations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Clipboard, KeyboardAvoidingView, Modal, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function Otp() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -27,18 +27,21 @@ export default function Otp() {
     loadEmail();
   }, []);
 
-  const handleOtpChange = (text: string, index: number) => {
-    // If the text length is 6, it's likely a paste operation
-    if (text.length === 6) {
-      const otpCode = text.replace(/\D/g, '').slice(0, 6); // Remove non-digits and limit to 6 digits
-      if (otpCode.length === 6) {
-        const newOtp = otpCode.split('');
+  const handleOtpChange = async (text: string, index: number) => {
+    // Handle paste operation
+    if (text.length > 1) {
+      // Clean the pasted text to only include numbers
+      const cleanedText = text.replace(/\D/g, '').slice(0, 6);
+
+      if (cleanedText.length === 6) {
+        const newOtp = cleanedText.split('');
         setOtp(newOtp);
         inputRefs.current[5]?.focus();
         return;
       }
     }
 
+    // Handle single digit input
     const newOtp = [...otp];
     newOtp[index] = text;
     setOtp(newOtp);
@@ -46,6 +49,22 @@ export default function Otp() {
     // Auto-focus next input
     if (text && index < 5) {
       inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  // Add paste button handler
+  const handlePasteButton = async () => {
+    try {
+      const clipboardContent = await Clipboard.getString();
+      const cleanedText = clipboardContent.replace(/\D/g, '').slice(0, 6);
+
+      if (cleanedText.length === 6) {
+        const newOtp = cleanedText.split('');
+        setOtp(newOtp);
+        inputRefs.current[5]?.focus();
+      }
+    } catch (error) {
+      console.error('Error reading clipboard:', error);
     }
   };
 
@@ -107,11 +126,18 @@ export default function Otp() {
                   onChangeText={(text) => handleOtpChange(text, index)}
                   onKeyPress={(e) => handleKeyPress(e, index)}
                   keyboardType="number-pad"
-                  maxLength={1}
+                  maxLength={6}
                   selectTextOnFocus
                 />
               ))}
             </View>
+
+            <TouchableOpacity
+              onPress={handlePasteButton}
+              className="mb-4"
+            >
+              <Text className="text-red-500 text-center">Paste Code</Text>
+            </TouchableOpacity>
 
             <Button
               variant="primary"
