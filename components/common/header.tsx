@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native'
 import React, { useRef } from 'react'
 import { Image, StatusBar, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import HeaderBackground from './HeaderBackground'
 
 interface HeaderProps extends ProfileHeaderProps {
   className?: string
@@ -52,24 +53,16 @@ export default function Header({
     <>
       {showStatusBar && (
         <StatusBar
-          backgroundColor={statusBarBackgroundColor}
+          backgroundColor="transparent"
           barStyle={statusBarStyle}
+          translucent
         />
       )}
-      <View
-        style={{
-          backgroundColor: statusBarBackgroundColor,
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 100,
-          zIndex: -1
-        }}
-      />
-      <SafeAreaView edges={['top']} style={{ backgroundColor: 'transparent' }}>
+      <HeaderBackground />
+      <SafeAreaView edges={['top']} className='bg-transparent'>
         <View
-          className={`flex flex-row justify-between items-center px-4 py-2 ${className}`}
+          className={`flex flex-row justify-between items-center px-4 py-9 ${className}`}
+          style={{ minHeight: 56 }}
           ref={headerRef}
           accessible={true}
           accessibilityLabel={accessibilityLabel || title}
@@ -88,7 +81,7 @@ export default function Header({
                 >
                   <Image
                     source={backArrowIcon || icons.backArrow}
-                    className='size-6'
+                    className='size-12'
                     style={{ tintColor: '#C33A31' }}
                   />
                 </TouchableOpacity>
