@@ -7,7 +7,7 @@ if (!process.env.EXPO_PUBLIC_API_URL) {
 }
 
 const api = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL || 'https://empresos-backend.onrender.com/api',
+  baseURL: process.env.EXPO_PUBLIC_API_URL || 'https://empresos-backend.onrender.com/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
