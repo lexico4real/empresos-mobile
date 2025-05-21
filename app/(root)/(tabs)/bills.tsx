@@ -1,12 +1,12 @@
 // screens/Bills.tsx
-import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import BillCard from '@/components/bills/bill-card';
+import BillItem from '@/components/bills/bill-items';
 import Header from '@/components/common/header';
 import icons from '@/constants/icons';
 import { bills, latestBills } from '@/data/index';
-import BillCard from '@/components/bills/bill-card';
-import BillItem from '@/components/bills/bill-items';
+import React from 'react';
+import { FlatList, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Bills() {
   return (
@@ -23,7 +23,11 @@ export default function Bills() {
           data={latestBills}
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
-          contentContainerClassName="pb-32 px-4"
+          contentContainerStyle={{
+            paddingBottom: 32,
+            paddingHorizontal: 16,
+            paddingTop: Platform.OS === 'ios' ? 8 : 16
+          }}
           ListHeaderComponent={() => (
             <>
               {/* Bill Categories */}
@@ -49,6 +53,7 @@ export default function Bills() {
                   <Image
                     source={icons.filter || require('@/assets/icons/filter.png')}
                     className="w-5 h-5 mr-2"
+                    resizeMode="contain"
                   />
                   <Text className="text-gray-800">Filters</Text>
                 </TouchableOpacity>
