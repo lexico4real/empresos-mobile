@@ -1,59 +1,60 @@
 {
-   "expo": {
-      "name": "empresos",
-      "slug": "empresos",
-      "version": "1.0.0",
-      "orientation": "portrait",
-      "icon": "./assets/images/empresos-icon-white.png",
-      "scheme": "myapp",
-      "userInterfaceStyle": "automatic",
-      "newArchEnabled": true,
-      "ios": {
-         "supportsTablet": true,
-         "bundleIdentifier": "com.nnamdi.azubuike.empresos",
-         "infoPlist": {
-            "ITSAppUsesNonExemptEncryption": false
-         }
-      },
-      "splash": {
-         "image": "./assets/images/splash-screen.png",
-         "resizeMode": "contain",
-         "backgroundColor": "#FF0000"
-      },
-      "android": {
-         "adaptiveIcon": {
-            "foregroundImage": "./assets/images/adaptive-icon.png",
-            "backgroundColor": "#ffffff"
-         },
-         "package": "com.nnamdi.azubuike.empresos"
-      },
-      "web": {
-         "bundler": "metro",
-         "output": "static",
-         "favicon": "./assets/images/favicon.png"
-      },
-      "plugins": [
-         "expo-router",
-         [
-            "expo-splash-screen",
-            {
-               "image": "./assets/images/splash-screen.png",
-               "resizeMode": "contain",
-               "backgroundColor": "#FF0000"
-            }
-         ],
-         "expo-secure-store"
-      ],
-      "experiments": {
-         "typedRoutes": true
-      },
-      "extra": {
-         "router": {
-            "origin": false
-         },
-         "eas": {
-            "projectId": "ac0e76b4-8f6f-43ff-8a04-ac0baaaa1167"
-         }
+  "expo": {
+    "name": "empresos",
+    "slug": "empresos",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/empresos-icon-white.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nnamdi.azubuike.empresos",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
       }
-   }
+    },
+    "splash": {
+      "image": "./assets/images/splash-screen.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF0000"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.nnamdi.azubuike.empresos"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-screen.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#FF0000"
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "d6671304-2b2c-4874-8db1-4b3939df468f"
+      }
+    },
+    "owner": "lexico4real"
+  }
 }
