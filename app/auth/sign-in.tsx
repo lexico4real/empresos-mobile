@@ -1,61 +1,73 @@
-import Button from '@/components/common/button'
-import Header from '@/components/common/header'
-import { SIGN_UP_URL } from '@/config/routes'
-import icons from '@/constants/icons'
-import images from '@/constants/images'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Link, router } from 'expo-router'
-import React, { useState, useEffect } from 'react'
-import { Text, View, Image, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Ionicons } from '@expo/vector-icons'
-import usePostOtp from '@/hooks/mutation/usePostOtp'
+import Button from "@/components/common/button";
+import Header from "@/components/common/header";
+import { SIGN_UP_URL } from "@/config/routes";
+import icons from "@/constants/icons";
+import images from "@/constants/images";
+import usePostOtp from "@/hooks/mutation/usePostOtp";
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Link, router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignIn() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { isPending, handlePostOtp } = usePostOtp()
+  const { isPending, handlePostOtp } = usePostOtp();
 
   useEffect(() => {
-    const loadSavedEmail = async () => {
+    const loadSavedCredentials = async () => {
       try {
-        const savedEmail = await AsyncStorage.getItem('userEmail')
-        if (savedEmail) {
-          setEmail(savedEmail)
-        }
-      } catch (error) {
-        console.error('Error loading saved email:', error)
-      }
-    }
+        const [savedEmail, savedPassword] = await Promise.all([
+          AsyncStorage.getItem("userEmail"),
+          AsyncStorage.getItem("userPassword"),
+        ]);
 
-    loadSavedEmail()
-  }, [])
+        if (savedEmail) setEmail(savedEmail);
+        if (savedPassword) setPassword(savedPassword);
+      } catch (error) {
+        console.error("Failed to load saved credentials:", error);
+      }
+    };
+
+    loadSavedCredentials();
+  }, []);
 
   const handleSignIn = async () => {
     if (!email.trim() || !password.trim()) {
-      return
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       // Save credentials to AsyncStorage
-      await AsyncStorage.setItem('userEmail', email)
-      await AsyncStorage.setItem('userPassword', password)
+      await AsyncStorage.setItem("userEmail", email);
+      await AsyncStorage.setItem("userPassword", password);
 
-      handlePostOtp({ email, password })
+      handlePostOtp({ email, password });
     } catch (error) {
-      console.error('Error signing in:', error)
+      console.error("Error signing in:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleForgotPassword = () => {
     // TODO: Implement forgot password logic here
-  }
+  };
 
   return (
     <>
@@ -67,9 +79,12 @@ export default function SignIn() {
         onRightPress={() => router.back()}
         titleAlignment="center"
       />
-      <SafeAreaView edges={['bottom', 'left', 'right']} className="flex-1 bg-white">
+      <SafeAreaView
+        edges={["bottom", "left", "right"]}
+        className="flex-1 bg-white"
+      >
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -118,7 +133,7 @@ export default function SignIn() {
                       onPress={() => setShowPassword(!showPassword)}
                     >
                       <Ionicons
-                        name={showPassword ? 'eye-off' : 'eye'}
+                        name={showPassword ? "eye-off" : "eye"}
                         size={24}
                         color="#666"
                       />
@@ -151,7 +166,10 @@ export default function SignIn() {
 
               <View className="flex-1 justify-center">
                 <Text className="text-center text-gray-600">
-                  Don't have an account? <Link href={SIGN_UP_URL} className='text-red-500 underline'>Sign Up</Link>
+                  Don't have an account?{" "}
+                  <Link href={SIGN_UP_URL} className="text-red-500 underline">
+                    Sign Up
+                  </Link>
                 </Text>
               </View>
             </View>
@@ -159,5 +177,5 @@ export default function SignIn() {
         </KeyboardAvoidingView>
       </SafeAreaView>
     </>
-  )
+  );
 }
