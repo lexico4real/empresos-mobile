@@ -3,9 +3,7 @@ import axios from "axios";
 import Constants from "expo-constants";
 
 const api = axios.create({
-  baseURL:
-    Constants.expoConfig?.extra?.BASE_URL ||
-    "https://empresos-backend.onrender.com/api/v1",
+  baseURL: Constants.expoConfig?.extra?.BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

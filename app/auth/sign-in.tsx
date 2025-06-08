@@ -1,173 +1,128 @@
-import Button from "@/components/common/button";
-import Header from "@/components/common/header";
-import { SIGN_UP_URL } from "@/config/routes";
-import icons from "@/constants/icons";
-import images from "@/constants/images";
-import usePostOtp from "@/hooks/mutation/usePostOtp";
-import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, router } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function SignIn() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+import Button from "@/components/button/button";
+import FormField from "@/components/form/form-field";
+import StatusModal from "@/components/modals/status-modal";
+import AppHeader from "@/components/nav/app-header";
 
+import { SIGN_UP_URL } from "@/config/routes";
+import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import usePostOtp from "@/hooks/mutation/usePostOtp";
+import { useModalStore } from "@/store/modalStore";
+
+export default function SignInScreen() {
+  const router = useRouter();
+  const [form, setForm] = useState({ email: "", password: "" });
   const { isPending, handlePostOtp } = usePostOtp();
+  const { showModal, hideModal, ...modalState } = useModalStore();
 
   useEffect(() => {
+    // Logic to load saved credentials remains the same
     const loadSavedCredentials = async () => {
       try {
-        const [savedEmail, savedPassword] = await Promise.all([
-          AsyncStorage.getItem("userEmail"),
-          AsyncStorage.getItem("userPassword"),
-        ]);
-
-        if (savedEmail) setEmail(savedEmail);
-        if (savedPassword) setPassword(savedPassword);
+        const savedEmail = await AsyncStorage.getItem("userEmail");
+        if (savedEmail) setForm((prev) => ({ ...prev, email: savedEmail }));
       } catch (error) {
-        console.error("Failed to load saved credentials:", error);
+        console.error("Failed to load saved email:", error);
       }
     };
-
     loadSavedCredentials();
   }, []);
 
   const handleSignIn = async () => {
-    if (!email.trim() || !password.trim()) {
+    if (!form.email.trim() || !form.password.trim()) {
+      showModal("error", "Please fill in all fields");
       return;
     }
 
-    setIsLoading(true);
     try {
-      // Save credentials to AsyncStorage
-      await AsyncStorage.setItem("userEmail", email);
-      await AsyncStorage.setItem("userPassword", password);
-
-      handlePostOtp({ email, password });
+      await AsyncStorage.setItem("userEmail", form.email);
+      await AsyncStorage.setItem("userPassword", form.password);
+      showModal("loading", "Signing in...");
+      handlePostOtp({ email: form.email, password: form.password });
     } catch (error) {
       console.error("Error signing in:", error);
-    } finally {
-      setIsLoading(false);
+      showModal("error", "Failed to sign in. Please try again.");
     }
-  };
-
-  const handleForgotPassword = () => {
-    // TODO: Implement forgot password logic here
   };
 
   return (
     <>
-      <Header
-        title="Sign In"
-        showBackArrow={true}
-        backArrowIcon={icons.back}
-        rightIcon={icons.close}
-        onRightPress={() => router.back()}
-        titleAlignment="center"
-      />
+      <AppHeader title="Sign In" />
       <SafeAreaView
+        style={styles.container}
         edges={["bottom", "left", "right"]}
-        className="flex-1 bg-white"
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          className="flex-1"
+          style={{ flex: 1 }}
         >
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View className="flex-1 px-5">
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.content}>
               {/* Top section with profile image */}
-              <View className="items-center mt-12">
-                <Image
-                  source={images.Profile}
-                  className="w-24 h-24 rounded-full"
+              {/* <View style={styles.imageContainer}>
+                <Image source={images.Profile} style={styles.profileImage} />
+              </View> */}
+
+              {/* Middle section with form */}
+              <View style={styles.formContainer}>
+                <Text style={styles.title}>Welcome Back</Text>
+
+                <FormField
+                  title="Email"
+                  value={form.email}
+                  handleChangeText={(text) => setForm({ ...form, email: text })}
+                  placeholder="Enter your email"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  containerStyle={styles.formField}
                 />
-              </View>
 
-              {/* Middle section with input */}
-              <View className="flex-1 justify-center">
-                <Text className="text-2xl font-semibold text-center mb-8">
-                  Welcome Back
-                </Text>
-
-                <View className="mb-4">
-                  <Text className="text-gray-600 mb-2">Email</Text>
-                  <TextInput
-                    className="w-full h-14 border border-gray-300 rounded-lg px-4"
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholder="Enter your email"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoComplete="email"
-                  />
-                </View>
-
-                <View className="mb-6">
-                  <Text className="text-gray-600 mb-2">Password</Text>
-                  <View className="relative">
-                    <TextInput
-                      className="w-full h-14 border border-gray-300 rounded-lg px-4 pr-12"
-                      value={password}
-                      onChangeText={setPassword}
-                      placeholder="Enter your password"
-                      secureTextEntry={!showPassword}
-                      autoCapitalize="none"
-                      autoComplete="password"
-                    />
-                    <TouchableOpacity
-                      className="absolute right-4 top-4"
-                      onPress={() => setShowPassword(!showPassword)}
-                    >
-                      <Ionicons
-                        name={showPassword ? "eye-off" : "eye"}
-                        size={24}
-                        color="#666"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                <FormField
+                  title="Password"
+                  value={form.password}
+                  handleChangeText={(text) =>
+                    setForm({ ...form, password: text })
+                  }
+                  placeholder="Enter your password"
+                  isPassword={true}
+                  containerStyle={styles.formField}
+                />
 
                 <TouchableOpacity
-                  onPress={handleForgotPassword}
-                  className="self-end mb-6"
+                  onPress={() => {}}
+                  style={styles.forgotPasswordButton}
                 >
-                  <Text className="text-red-500">Forgot Password?</Text>
+                  <Text style={styles.forgotPasswordText}>
+                    Forgot Password?
+                  </Text>
                 </TouchableOpacity>
               </View>
 
               {/* Bottom section with buttons */}
-              <View className="mb-8">
+              <View style={styles.bottomContainer}>
                 <Button
-                  className="bg-red-500 rounded-full py-4 mb-4"
+                  title="Sign In"
                   onPress={handleSignIn}
-                  disabled={isLoading || !email.trim() || !password.trim()}
+                  disabled={!form.email || !form.password || isPending}
                   loading={isPending}
                   loadingText="Signing in..."
-                >
-                  <Text className="text-center text-white font-medium">
-                    Sign In
-                  </Text>
-                </Button>
-              </View>
-
-              <View className="flex-1 justify-center">
-                <Text className="text-center text-gray-600">
+                />
+                <Text style={styles.signUpText}>
                   Don't have an account?{" "}
-                  <Link href={SIGN_UP_URL} className="text-red-500 underline">
+                  <Link href={SIGN_UP_URL} style={styles.signUpLink}>
                     Sign Up
                   </Link>
                 </Text>
@@ -176,6 +131,76 @@ export default function SignIn() {
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
+      <StatusModal
+        visible={modalState.visible}
+        type={modalState.type}
+        message={modalState.message}
+        onClose={hideModal}
+      />
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingHorizontal: 15,
+  },
+  content: {
+    flex: 1,
+    justifyContent: "space-between",
+    paddingBottom: SIZES.base * 2,
+  },
+  imageContainer: {
+    alignItems: "center",
+    marginTop: SIZES.base * 3,
+  },
+  profileImage: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+  },
+  formContainer: {
+    flex: 2,
+    justifyContent: "center",
+    marginTop: SIZES.base * 2,
+  },
+  title: {
+    ...FONTS.h2,
+    textAlign: "center",
+    marginBottom: SIZES.base * 2,
+    color: COLORS.secondary,
+  },
+  formField: {
+    marginBottom: SIZES.base,
+  },
+  forgotPasswordButton: {
+    alignSelf: "flex-end",
+    marginTop: SIZES.base,
+    marginBottom: SIZES.base * 2,
+  },
+  forgotPasswordText: {
+    ...FONTS.body,
+    fontWeight: "500",
+    color: COLORS.primary,
+  },
+  bottomContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    marginTop: SIZES.base * 2,
+  },
+  signUpText: {
+    ...FONTS.body,
+    textAlign: "center",
+    color: COLORS.grey,
+    marginTop: SIZES.base,
+  },
+  signUpLink: {
+    color: COLORS.primary,
+    fontWeight: "600",
+  },
+});

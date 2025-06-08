@@ -2,6 +2,7 @@ import MenuSvg from "@/assets/svgs/menu-svg";
 import AccountInfoCard from "@/components/cards/account-info-card";
 import { PROFILE_URL, SEND_MONEY_URL } from "@/config/routes";
 import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import { useUserStore } from "@/store/userStore";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
@@ -53,6 +54,8 @@ const lineData = [
 }));
 
 export default function IndexScreen() {
+  const { user } = useUserStore();
+
   const cardWidth = (DEVICE_WIDTH - SIZES.base * 4 - SIZES.base * 3) / 4;
 
   const chartWidth = DEVICE_WIDTH - 105;
@@ -100,7 +103,7 @@ export default function IndexScreen() {
           </View>
         </SafeAreaView>
 
-        <Text style={styles.welcomeText}>Hello Frank,</Text>
+        <Text style={styles.welcomeText}>Hello, {user?.firstName}</Text>
 
         {/* --- CURRENT ACCOUNT BANNER --- */}
         <View style={styles.currentAccountBanner}>
@@ -168,7 +171,7 @@ export default function IndexScreen() {
         </View>
       </View>
 
-      {/* --- IMPROVEMENT BANNER --- */}
+      {/* --- FINANCING BANNER --- */}
       <TouchableOpacity style={styles.improveBanner}>
         <Ionicons name="wallet-outline" size={24} color={COLORS.white} />
         <View style={styles.improveBannerTextWrapper}>
@@ -182,7 +185,7 @@ export default function IndexScreen() {
         <Ionicons name="chevron-forward" size={22} color={COLORS.white} />
       </TouchableOpacity>
 
-      {/* --- INFO CARDS --- */}
+      {/* --- ACCOUNT INFO CARDS --- */}
       <AccountInfoCard {...accountData} />
       <AccountInfoCard {...creditCardData} />
     </ScrollView>

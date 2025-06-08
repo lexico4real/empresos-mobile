@@ -1,6 +1,6 @@
 import MenuSvg from "@/assets/svgs/menu-svg";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
   SafeAreaView,
@@ -12,13 +12,12 @@ import {
 
 interface AppHeaderProps {
   title: string;
-  canGoBack?: boolean;
 }
 
-export default function AppHeader({
-  title,
-  canGoBack = false,
-}: AppHeaderProps) {
+export default function AppHeader({ title }: AppHeaderProps) {
+  const router = useRouter();
+  const canGoBack = router.canGoBack();
+
   const onBackPress = () => {
     router.back();
   };
