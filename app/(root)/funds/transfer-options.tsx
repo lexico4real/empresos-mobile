@@ -1,133 +1,132 @@
-import Header from '@/components/common/header';
-import { SALARY_PENSION_URL, SCHEDULED_TRANSFERS_URL, TRANSFERS_URL } from '@/config/routes';
-import icons from '@/constants/icons';
-import { Link } from 'expo-router'; // Import Link for navigation if needed later
-import React, { useState } from 'react';
-import { Image, LayoutAnimation, Platform, ScrollView, Text, TouchableOpacity, UIManager, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import FAQItem from "@/components/cards/faq-item";
+import SendMoneyItem from "@/components/cards/send-money-item";
+import AppHeader from "@/components/nav/app-header";
+import {
+  SALARY_PENSION_URL,
+  SCHEDULED_TRANSFERS_URL,
+  TRANSFERS_URL,
+} from "@/config/routes";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-// Enable LayoutAnimation on Android
-if (
-  Platform.OS === 'android' &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
-
-// Define the structure for transfer options based on the image
-const transferOptions = [
+export const sendingOptions = [
   {
-    id: '1',
-    icon: icons.moneyIcon,
-    title: 'Transfers',
-    subtitle: 'National and international',
+    icon: "swap-horizontal-outline",
+    title: "Transfers",
+    subtitle: "National and international",
     route: TRANSFERS_URL,
   },
   {
-    id: '2',
-    icon: icons.moneyBag,
-    title: 'Salary and pension payments',
-    subtitle: 'Immediate payment',
+    icon: "card-outline",
+    title: "Salary and pension payments",
+    subtitle: "Immediate payment",
     route: SALARY_PENSION_URL,
   },
   {
-    id: '3',
-    icon: icons.refresh,
-    title: 'Scheduled and periodic transfers',
-    subtitle: 'Schedule and manage your transfers',
+    icon: "calendar-outline",
+    title: "Scheduled and periodic transfers",
+    subtitle: "Schedule and manage your transfers",
     route: SCHEDULED_TRANSFERS_URL,
   },
 ];
 
-// Define the structure for FAQ items (add dummy answer)
-const faqItems = [
-  { id: 'faq1', question: 'How to make a periodic transfer?', answer: 'This is how you make a periodic transfer. [Details...] ' },
-  { id: 'faq2', question: 'How to make a national transfer?', answer: 'This is how you make a national transfer. [Details...]' },
-  { id: 'faq3', question: 'How to make a deferred transfer?', answer: 'This is how you make a deferred transfer. [Details...]' },
-  { id: 'faq4', question: 'How to make a transfer?', answer: 'This is how you make a transfer. [Details...]' },
+const faqData = [
+  "How to make a periodic transfer?",
+  "How to make a national transfer?",
+  "How to make a deferred transfer?",
+  "How to make a transfer?",
 ];
 
 export default function TransferOptionsScreen() {
-  const [expandedFaqId, setExpandedFaqId] = useState<string | null>(null);
-
-  const toggleFaq = (id: string) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpandedFaqId(expandedFaqId === id ? null : id);
-  };
-
   return (
-    <>
-      <Header
-        title="Sending money"
-        showBackArrow={true}
-        backArrowIcon={icons.back}
-        titleAlignment="center"
-      />
-      <SafeAreaView className='flex-1 bg-gray-50' edges={['bottom', 'left', 'right']}>
-        <ScrollView className='flex-1'>
-          <View className='px-4 py-6'>
-            <Text className='text-lg font-semibold mb-4 text-gray-700'>All options</Text>
+    <View style={styles.container}>
+      <AppHeader title="Sending money" canGoBack={true} />
 
-            {/* Transfer Options List */}
-            {transferOptions.map((item) => (
-              // Using Link component for potential navigation later
-              <Link key={item.id} href={item.route as any} asChild>
-                <TouchableOpacity
-                  className='bg-white rounded-lg p-4 mb-3 flex-row items-center justify-between'
-                  style={{
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 2,
-                    elevation: 1,
-                  }}
-                // onPress={() => router.push(item.route)} // Or handle press directly
-                >
-                  <View className='flex-row items-center gap-4 flex-1'>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.optionsListParentContainer}>
+          <Text style={styles.sectionTitle}>All options</Text>
+          {sendingOptions.map((item) => (
+            <View key={item.title}>
+              <SendMoneyItem
+                icon={item.icon as keyof typeof Ionicons.glyphMap}
+                title={item.title}
+                subtitle={item.subtitle}
+                onPress={() => router.push(item.route)}
+              />
+            </View>
+          ))}
+        </View>
 
-                    <Image source={item.icon} className='w-6 h-6 text-red-600' resizeMode="contain" tintColor="#D32F2F" />
-                    <View className='flex-1'>
-                      <Text className='text-base font-medium text-gray-800'>{item.title}</Text>
-                      <Text className='text-sm text-gray-500'>{item.subtitle}</Text>
-                    </View>
-                  </View>
-                  <Image source={icons.rightArrow} className='w-4 h-4' resizeMode="contain" tintColor="#A0A0A0" />
-                </TouchableOpacity>
-              </Link>
+        <View style={styles.faqCard}>
+          {/* Dark Header */}
+          <View style={styles.faqHeader}>
+            <Text style={styles.faqTitle}>Do you have any doubt?</Text>
+          </View>
+
+          {/* White Body */}
+          <View style={styles.faqBody}>
+            {faqData.map((question, index) => (
+              <View key={question}>
+                <FAQItem question={question} />
+                {index < faqData.length - 1 && (
+                  <View style={styles.faqDivider} />
+                )}
+              </View>
             ))}
           </View>
-
-          {/* FAQ Section */}
-          <View className='bg-[#004D50] mt-4 p-4 mx-4 rounded-lg'>
-            <Text className='text-white text-lg font-semibold mb-2'>Do you have any doubt?</Text>
-            {faqItems.map((item, index) => {
-              const isExpanded = expandedFaqId === item.id;
-              return (
-                <View key={item.id} className={`border-b border-gray-600 ${index === faqItems.length - 1 ? 'border-b-0' : ''}`}>
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => toggleFaq(item.id)}
-                    className={'flex-row justify-between items-center py-3'}
-                  >
-                    <Text className='text-white text-sm flex-1 pr-2'>{item.question}</Text>
-                    <Image
-                      source={isExpanded ? icons.arrowDown : icons.arrowDown} // Change icon based on state
-                      className='w-4 h-4'
-                      resizeMode='contain'
-                      tintColor="#FFFFFF"
-                    />
-                  </TouchableOpacity>
-                  {isExpanded && (
-                    <View className="pb-3">
-                      <Text className='text-gray-300 text-sm'>{item.answer}</Text>
-                    </View>
-                  )}
-                </View>
-              );
-            })}
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
+        </View>
+      </ScrollView>
+    </View>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  scrollContainer: {
+    paddingBottom: 30,
+  },
+  optionsListParentContainer: {
+    backgroundColor: "#f8f9fa",
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#43474A",
+    marginBottom: 15,
+    paddingHorizontal: 5,
+  },
+  faqCard: {
+    marginHorizontal: 15,
+    marginTop: 10,
+    marginBottom: 20,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    overflow: "hidden",
+    backgroundColor: "#fff",
+  },
+  faqHeader: {
+    backgroundColor: "#004D40",
+    padding: 20,
+  },
+  faqTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#fff",
+  },
+  faqBody: {},
+  faqDivider: {
+    height: 1,
+    backgroundColor: "#F0F0F0",
+    marginLeft: 20,
+    marginRight: 20,
+  },
+});

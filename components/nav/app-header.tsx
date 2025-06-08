@@ -32,7 +32,9 @@ export default function AppHeader({
               <Ionicons name="arrow-back" size={24} color="#E30600" />
             </TouchableOpacity>
           )}
-          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+            {title}
+          </Text>
         </View>
         <View style={styles.rightContainer}>
           <TouchableOpacity>

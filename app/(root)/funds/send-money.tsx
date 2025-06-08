@@ -1,41 +1,97 @@
-import FAQItem from "@/components/cards/faq-item";
+import RecipientCard from "@/components/cards/recipient-card";
 import SendMoneyItem from "@/components/cards/send-money-item";
 import AppHeader from "@/components/nav/app-header";
+import { TRANSFER_OPTIONS_URL } from "@/config/routes";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { sendingOptions } from "./transfer-options";
 
-const sendingOptions = [
+const recipients = [
   {
-    icon: "swap-horizontal-outline",
-    title: "Transfers",
-    subtitle: "National and international",
+    initials: "C",
+    name: "Claudia",
+    accountNumber: "1234567890",
+    bgColor: "#4A90E2",
   },
   {
-    icon: "card-outline",
-    title: "Salary and pension payments",
-    subtitle: "Immediate payment",
+    initials: "G",
+    name: "George",
+    accountNumber: "1234567890",
+    bgColor: "#F5A623",
   },
   {
-    icon: "calendar-outline",
-    title: "Scheduled and periodic transfers",
-    subtitle: "Schedule and manage your transfers",
+    initials: "GN",
+    name: "Green Corp",
+    accountNumber: "1234567890",
+    bgColor: "#50E3C2",
+  },
+  {
+    initials: "S",
+    name: "Sarah",
+    accountNumber: "1234567890",
+    bgColor: "#BD10E0",
   },
 ];
 
-const faqData = [
-  "How to make a periodic transfer?",
-  "How to make a national transfer?",
-  "How to make a deferred transfer?",
-  "How to make a transfer?",
-];
-
-export default function SendingMoneyScreen() {
+export default function SendMoneyScreen() {
   return (
     <View style={styles.container}>
       <AppHeader title="Sending money" canGoBack={true} />
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* --- "Send to..." Horizontal Scroll Section --- */}
+        <View style={styles.sendToContainer}>
+          <Text style={styles.sectionTitle}>Send to...</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScroll}
+          >
+            {/* New Transfer Card */}
+            <TouchableOpacity
+              style={styles.newTransferCard}
+              onPress={() => router.push(TRANSFER_OPTIONS_URL)}
+            >
+              <View style={styles.plusIconCircle}>
+                <Ionicons name="add" size={32} color="#E30600" />
+              </View>
+              <Text style={[styles.newTransferTitle, { textAlign: "center" }]}>
+                New transfer
+              </Text>
+              <Text
+                style={[
+                  styles.newTransferSubtitle,
+                  { textAlign: "center", paddingHorizontal: 8 },
+                ]}
+              >
+                Transfers, transfers between accounts, salary payments
+              </Text>
+            </TouchableOpacity>
+
+            {/* Recipient Cards */}
+            {recipients.map((recipient) => (
+              <RecipientCard key={recipient.initials} {...recipient} />
+            ))}
+          </ScrollView>
+        </View>
+
+        {/* --- Empty State Section --- */}
+        <View style={styles.emptyStateContainer}>
+          <Text style={styles.emptyStateTitle}>This is very empty</Text>
+          <Text style={styles.emptyStateSubtitle}>
+            You still have no money transfers in this account
+          </Text>
+        </View>
+
+        {/* --- "All options" Reusable Section --- */}
         <View style={styles.optionsListParentContainer}>
           <Text style={styles.sectionTitle}>All options</Text>
           {sendingOptions.map((item) => (
@@ -44,29 +100,10 @@ export default function SendingMoneyScreen() {
                 icon={item.icon as keyof typeof Ionicons.glyphMap}
                 title={item.title}
                 subtitle={item.subtitle}
-                onPress={() => console.log(`Pressed ${item.title}`)}
+                onPress={() => router.push(item.route)}
               />
             </View>
           ))}
-        </View>
-
-        <View style={styles.faqCard}>
-          {/* Dark Header */}
-          <View style={styles.faqHeader}>
-            <Text style={styles.faqTitle}>Do you have any doubt?</Text>
-          </View>
-
-          {/* White Body */}
-          <View style={styles.faqBody}>
-            {faqData.map((question, index) => (
-              <View key={question}>
-                <FAQItem question={question} />
-                {index < faqData.length - 1 && (
-                  <View style={styles.faqDivider} />
-                )}
-              </View>
-            ))}
-          </View>
         </View>
       </ScrollView>
     </View>
@@ -81,44 +118,80 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingBottom: 30,
   },
-  optionsListParentContainer: {
-    backgroundColor: "#f8f9fa",
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
-  },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
     color: "#43474A",
     marginBottom: 15,
-    paddingHorizontal: 5,
+    paddingHorizontal: 15,
   },
-  faqCard: {
-    marginHorizontal: 15,
-    marginTop: 10,
-    marginBottom: 20,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-    overflow: "hidden",
+  // --- Send To Section ---
+  sendToContainer: {
+    backgroundColor: "#f8f9fa",
+    paddingTop: 20,
+    paddingBottom: 25,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+  },
+  horizontalScroll: {
+    paddingHorizontal: 15,
+  },
+  newTransferCard: {
+    width: 180,
+    height: 130,
     backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 15,
+    marginRight: 12,
   },
-  faqHeader: {
-    backgroundColor: "#004D40",
-    padding: 20,
+  plusIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#FEEEEE",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 6,
+    alignSelf: "center",
   },
-  faqTitle: {
+  newTransferTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#26303A",
+  },
+  newTransferSubtitle: {
+    fontSize: 10,
+    fontWeight: "400",
+    color: "#6c757d",
+    marginTop: 2,
+    lineHeight: 12,
+  },
+  // --- Empty State Section ---
+  emptyStateContainer: {
+    alignItems: "center",
+    paddingVertical: 40,
+    paddingHorizontal: 40,
+  },
+  emptyStateTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#fff",
+    color: "#26303A",
+    marginBottom: 8,
   },
-  faqBody: {
+  emptyStateSubtitle: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#6c757d",
+    textAlign: "center",
   },
-  faqDivider: {
-    height: 1,
-    backgroundColor: "#F0F0F0",
-    marginLeft: 20,
-    marginRight: 20,
+
+  // --- All Options Section ---
+  allOptionsContainer: {
+    paddingHorizontal: 15,
+    marginTop: 20,
+  },
+  optionsListParentContainer: {
+    padding: 15,
+    flex: 1,
   },
 });

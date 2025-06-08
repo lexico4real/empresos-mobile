@@ -1,194 +1,262 @@
-import Button from '@/components/common/button';
-import FormField from '@/components/common/form-field';
-import Header from '@/components/common/header';
-import StatusModal from '@/components/common/modal';
-import icons from '@/constants/icons';
-import usePostIntlTransaction from '@/hooks/mutation/usePostIntlTransaction';
-import { useModalStore } from "@/store/modalStore";
-import useTransferStore from '@/store/transferStore';
-import { useUserStore } from '@/store/userStore';
-import { useRouter } from 'expo-router';
-import React from 'react';
+import { useRouter } from "expo-router";
+import React from "react";
 import {
   Image,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  View
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-// Define state type for selectors
-interface TransferState {
-  countryName: string | null;
-  currency: string;
-  amount: string;
-  itemDescription: string;
-  setAmountDetails: (details: {
-    amount: string;
-    currency: string;
-    itemDescription: string;
-  }) => void;
-  // Add country flag if available in store
-  // countryFlag: any; 
-}
+import Button from "@/components/button/button";
+import FormField from "@/components/form/form-field";
+import AppHeader from "@/components/nav/app-header";
+
+import icons from "@/constants/icons";
+import { COLORS, FONTS, SIZES } from "@/constants/theme";
+
+import StatusModal from "@/components/modals/status-modal";
+import usePostIntlTransaction from "@/hooks/mutation/usePostIntlTransaction";
+import { useModalStore } from "@/store/modalStore";
+import useTransferStore from "@/store/transferStore";
+import { useUserStore } from "@/store/userStore";
 
 export default function AmountScreen() {
   const router = useRouter();
-  const { user } = useUserStore()
-  // Get state and actions from Zustand individually
-  const countryName = useTransferStore((state: TransferState) => state.countryName);
-  const currency = useTransferStore((state: TransferState) => state.currency);
-  const amount = useTransferStore((state: TransferState) => state.amount);
-  const itemDescription = useTransferStore((state: TransferState) => state.itemDescription);
-  const setAmountDetails = useTransferStore((state: TransferState) => state.setAmountDetails);
-  const { showModal } = useModalStore();
+  const { user } = useUserStore();
+  const { showModal, hideModal, ...modalState } = useModalStore();
+
+  const countryName = useTransferStore((state) => state.countryName);
+  const amount = useTransferStore((state) => state.amount);
+  const currency = useTransferStore((state) => state.currency);
+  const itemDescription = useTransferStore((state) => state.itemDescription);
+  const setAmount = useTransferStore((state) => state.setAmount);
+  const setCurrency = useTransferStore((state) => state.setCurrency);
+  const setItemDescription = useTransferStore(
+    (state) => state.setItemDescription
+  );
 
   const { isPending, handlePostIntlTransaction } = usePostIntlTransaction();
 
-  // Handler to update store for currency (placeholder)
   const handleCurrencyChange = (newCurrency: string) => {
-    // Convert currency name to code if needed
-    const currencyCode = newCurrency === 'Dollar' ? 'USD' : newCurrency;
-    // Pass the current amount and itemDescription when updating currency
-    setAmountDetails({ amount, currency: currencyCode, itemDescription });
+    const currencyCode = newCurrency === "Dollar" ? "USD" : newCurrency;
+    setCurrency(currencyCode);
   };
 
   const submit = async () => {
     if (!amount || parseFloat(amount) <= 0) {
-      showModal('error', 'Please enter a valid amount');
-      return;
-    }
-    if (!currency) {
-      showModal('error', 'Please select a currency');
+      showModal("error", "Please enter a valid amount");
       return;
     }
 
-    // 1. Get all required data from Zustand store
     const transferData = useTransferStore.getState();
 
-    // 2. Prepare the payload
     const payload = {
-      senderAccount: user?.accounts[0].accountNumber ?? '',
+      senderAccount: user?.accounts[0].accountNumber ?? "",
       senderName: "self",
       receiverAccount: transferData.receiverAccount,
       receiverBankName: transferData.bankName,
       receiverBankSwiftCode: transferData.swiftCode,
       receiverName: transferData.receiverName,
-      receiverCountry: transferData.countryName || 'N/A',
-      currency: transferData.currency === 'Dollar' ? 'USD' : transferData.currency,
+      receiverCountry: transferData.countryName || "N/A",
+      currency:
+        transferData.currency === "Dollar" ? "USD" : transferData.currency,
       amount: parseFloat(transferData.amount),
     };
 
     try {
-      showModal('loading', 'Processing transaction...');
+      showModal("loading", "Processing transaction...");
       handlePostIntlTransaction(payload);
     } catch {
-      showModal('error');
+      showModal("error");
     }
   };
 
   return (
-    <React.Fragment>
-      <Header
-        title="Amount"
-        showBackArrow={true}
-        backArrowIcon={icons.back}
-        titleAlignment="center"
-      />
-      <SafeAreaView className="flex-1 bg-white" edges={['bottom', 'left', 'right']}>
-        <ScrollView className="flex-1 px-4 py-6" contentContainerStyle={{ paddingBottom: 100 }}>
-
-          {/* Source Account Section */}
-          <View className="mb-6">
-            <Text className="text-sm text-gray-500 mb-1">Source account</Text>
-            <View className="flex-row justify-between items-center">
-              <Text className="text-base font-semibold text-gray-800">Main Account (IBAN)</Text>
-              <TouchableOpacity onPress={() => { /* TODO: Handle Change Source Account */ }}>
-                <Text className="text-sm text-red-600 font-medium">Change</Text>
+    <>
+      <AppHeader title="Amount" canGoBack />
+      <SafeAreaView
+        style={styles.container}
+        edges={["bottom", "left", "right"]}
+      >
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={{ paddingBottom: 100 }}
+        >
+          {/* Source Account */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionLabel}>Source account</Text>
+            <View style={styles.row}>
+              <Text style={styles.primaryText}>Main Account (IBAN)</Text>
+              <TouchableOpacity onPress={() => {}}>
+                <Text style={styles.changeButtonText}>Change</Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Destination Country Section */}
-          <View className="mb-6">
-            <Text className="text-sm text-gray-500 mb-2">Destination country</Text>
-            <View className="flex-row justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <View className="flex-row items-center gap-3">
-                {/* TODO: Add Country Flag Image based on store/props */}
-                <View className="w-6 h-6 rounded-full bg-gray-300"></View>
-                <Text className="text-base font-medium text-gray-800">{countryName || 'N/A'}</Text>
+          {/* Destination Country */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionLabel}>Destination country</Text>
+            <View style={styles.destinationCard}>
+              <View style={styles.row}>
+                <View style={styles.flag} />
+                <Text style={styles.primaryText}>{countryName || "N/A"}</Text>
               </View>
-              <TouchableOpacity onPress={() => router.back()} className="flex-row items-center gap-1">
-                <Text className="text-sm text-blue-600 font-medium">Change country</Text>
-                <Image source={icons.arrowDown} className="w-3 h-3" resizeMode="contain" tintColor="#2563EB" />
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={styles.row}
+              >
+                <Text style={styles.changeCountryText}>Change country</Text>
+                <Image
+                  source={icons.arrowDown}
+                  style={styles.icon}
+                  tintColor={COLORS.primary}
+                />
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Amount & Currency Section */}
-          <View className="flex-row mb-4 gap-3">
-            <View className="flex-1">
+          {/* Amount & Currency */}
+          <View
+            style={[
+              styles.row,
+              { gap: SIZES.base * 1.5, alignItems: "flex-start" },
+            ]}
+          >
+            <View style={{ flex: 1 }}>
               <FormField
                 title="Amount you are sending"
                 value={amount}
-                handleChangeText={(newAmount) =>
-                  setAmountDetails({ amount: newAmount, currency, itemDescription })
-                }
-                placeholder='0.00'
-                keyboardType='decimal-pad'
+                handleChangeText={setAmount}
+                placeholder="0.00"
+                keyboardType="decimal-pad"
               />
             </View>
-            <View className="w-28">
-              <Text className="text-base text-gray-600 font-medium mb-2">Currency</Text>
-
+            <View style={{ width: 120 }}>
+              <Text style={[styles.sectionLabel, { marginBottom: SIZES.base }]}>
+                Currency
+              </Text>
               <TouchableOpacity
-                onPress={() => handleCurrencyChange(currency === 'EUR' ? 'USD' : 'EUR')}
-                className="border-2 border-gray-200 h-16 px-4 bg-gray-100 rounded-2xl items-center flex-row justify-between"
+                onPress={() =>
+                  handleCurrencyChange(currency === "EUR" ? "USD" : "EUR")
+                }
+                style={styles.currencyPicker}
               >
-                <Text className="text-black font-semibold text-base">{currency}</Text>
-                <Image source={icons.arrowDown} className="w-4 h-4" resizeMode="contain" tintColor="#888" />
+                <Text style={styles.primaryText}>{currency}</Text>
+                <Image
+                  source={icons.arrowDown}
+                  style={styles.icon}
+                  tintColor={COLORS.grey}
+                />
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Item (Optional) Section */}
-          <View className="mb-6">
+          {/* Item Description */}
+          <View style={styles.sectionContainer}>
             <FormField
               title="Item (optional)"
               value={itemDescription}
-              handleChangeText={(newItemDesc) =>
-                setAmountDetails({ amount, currency, itemDescription: newItemDesc })
-              }
-              placeholder='Write the item here'
+              handleChangeText={setItemDescription}
+              placeholder="Write the item here"
               maxLength={140}
             />
-            <Text className="text-xs text-gray-500">* Characters permitted: A-Z, a-z, 0-9, @, ./, ?</Text>
-            <Text className="text-xs text-gray-500 text-right">{itemDescription.length}/140</Text>
+            <Text style={styles.helperText}>
+              * Characters permitted: A-Z, a-z, 0-9, @, ./, ?
+            </Text>
+            <Text style={[styles.helperText, { textAlign: "right" }]}>
+              {itemDescription.length}/140
+            </Text>
           </View>
-
         </ScrollView>
 
-        <View className="px-4">
+        <View style={styles.bottomContainer}>
           <Button
+            title="Send Money"
             onPress={submit}
-            className="bg-red-500 rounded-full py-4 mb-4 text-white p-4"
             disabled={isPending}
             loading={isPending}
             loadingText="Processing..."
-          >
-            <Text className="text-white font-medium text-md text-center">
-              Send Money
-            </Text>
-          </Button>
+          />
         </View>
       </SafeAreaView>
       <StatusModal
-        visible={useModalStore.getState().visible}
-        type={useModalStore.getState().type}
-        message={useModalStore.getState().message}
-        onClose={useModalStore.getState().hideModal}
+        visible={modalState.visible}
+        type={modalState.type}
+        message={modalState.message}
+        onClose={hideModal}
       />
-    </React.Fragment>
+    </>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: COLORS.white },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: SIZES.base * 1.5,
+    paddingTop: SIZES.base * 1.5,
+  },
+  sectionContainer: { marginBottom: SIZES.base * 1.5 },
+  sectionLabel: {
+    ...FONTS.body,
+    color: COLORS.grey,
+    marginBottom: SIZES.base / 2,
+  },
+  primaryText: { ...FONTS.h4, color: COLORS.secondary },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  changeButtonText: { ...FONTS.body, fontWeight: "600", color: COLORS.primary },
+  destinationCard: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: SIZES.base * 1.5,
+    backgroundColor: COLORS.lightGrey,
+    borderRadius: SIZES.radius,
+    borderWidth: 1,
+    borderColor: COLORS.lightBorder,
+  },
+  flag: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: COLORS.grey,
+    marginRight: SIZES.base,
+  },
+  changeCountryText: {
+    ...FONTS.body,
+    fontWeight: "600",
+    color: COLORS.primary,
+    marginRight: SIZES.base / 2,
+  },
+  icon: { width: 14, height: 14 },
+  currencyPicker: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: COLORS.lightGrey,
+    borderWidth: 1,
+    borderColor: COLORS.lightBorder,
+    borderRadius: SIZES.radius,
+    height: 50,
+    paddingHorizontal: SIZES.base * 2,
+  },
+  helperText: {
+    ...FONTS.body,
+    fontSize: 12,
+    color: COLORS.grey,
+    marginTop: SIZES.base / 2,
+  },
+  bottomContainer: {
+    padding: SIZES.base * 1.5,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.lightBorder,
+    backgroundColor: COLORS.white,
+  },
+});
