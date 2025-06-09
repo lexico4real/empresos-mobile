@@ -58,6 +58,10 @@ export default function SignInScreen() {
     }
   };
 
+  useEffect(() => {
+    hideModal();
+  }, []);
+
   return (
     <>
       <AppHeader title="Sign In" />

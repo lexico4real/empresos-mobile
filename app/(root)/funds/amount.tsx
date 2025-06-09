@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Image,
   ScrollView,
@@ -74,9 +74,13 @@ export default function AmountScreen() {
     }
   };
 
+  useEffect(() => {
+    hideModal();
+  }, []);
+
   return (
     <>
-      <AppHeader title="Amount" canGoBack />
+      <AppHeader title="Amount" />
       <SafeAreaView
         style={styles.container}
         edges={["bottom", "left", "right"]}

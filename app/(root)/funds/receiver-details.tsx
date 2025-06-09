@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -11,6 +11,7 @@ import FormField from "@/components/form/form-field";
 import StatusModal from "@/components/modals/status-modal";
 import AppHeader from "@/components/nav/app-header";
 import { useModalStore } from "@/store/modalStore";
+import { AMOUNT_URL } from "@/config/routes";
 
 export default function ReceiverDetailsScreen() {
   const router = useRouter();
@@ -36,12 +37,16 @@ export default function ReceiverDetailsScreen() {
       return;
     }
     setReceiverDetails(form);
-    router.push("/funds/amount");
+    router.push(AMOUNT_URL);
   };
+
+  useEffect(() => {
+    hideModal();
+  }, []);
 
   return (
     <>
-      <AppHeader title={`Transfer to ${countryName}`} canGoBack />
+      <AppHeader title={`Transfer to ${countryName}`} />
       <SafeAreaView
         style={styles.container}
         edges={["bottom", "left", "right"]}
