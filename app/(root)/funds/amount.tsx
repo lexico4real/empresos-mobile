@@ -19,6 +19,7 @@ import { COLORS, FONTS, SIZES } from "@/constants/theme";
 
 import StatusModal from "@/components/modals/status-modal";
 import usePostIntlTransaction from "@/hooks/mutation/usePostIntlTransaction";
+import { useBankList } from "@/hooks/query/useBankList";
 import { useModalStore } from "@/store/modalStore";
 import useTransferStore from "@/store/transferStore";
 import { useUserStore } from "@/store/userStore";
@@ -36,6 +37,11 @@ export default function AmountScreen() {
   const setCurrency = useTransferStore((state) => state.setCurrency);
   const setItemDescription = useTransferStore(
     (state) => state.setItemDescription
+  );
+
+  const { countries } = useBankList();
+  const selectedCountry = countries.find(
+    (country) => country.country === countryName
   );
 
   const { isPending, handlePostIntlTransaction } = usePostIntlTransaction();
@@ -105,7 +111,17 @@ export default function AmountScreen() {
             <Text style={styles.sectionLabel}>Destination country</Text>
             <View style={styles.destinationCard}>
               <View style={styles.row}>
-                <View style={styles.flag} />
+                <View style={styles.flagContainer}>
+                  <Image
+                    source={
+                      selectedCountry?.flag
+                        ? { uri: selectedCountry.flag }
+                        : icons.spainLogo
+                    }
+                    style={styles.flag}
+                    resizeMode="cover"
+                  />
+                </View>
                 <Text style={styles.primaryText}>{countryName || "N/A"}</Text>
               </View>
               <TouchableOpacity
@@ -226,12 +242,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.lightBorder,
   },
-  flag: {
+  flagContainer: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: COLORS.grey,
+    overflow: "hidden",
     marginRight: SIZES.base,
+  },
+  flag: {
+    width: "100%",
+    height: "100%",
   },
   changeCountryText: {
     ...FONTS.body,

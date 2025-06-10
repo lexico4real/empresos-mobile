@@ -8,10 +8,18 @@ import useTransferStore from "@/store/transferStore";
 
 import Button from "@/components/button/button";
 import FormField from "@/components/form/form-field";
+import SelectInput from "@/components/form/select-input";
 import StatusModal from "@/components/modals/status-modal";
 import AppHeader from "@/components/nav/app-header";
-import { useModalStore } from "@/store/modalStore";
 import { AMOUNT_URL } from "@/config/routes";
+import { Bank, useBankList } from "@/hooks/query/useBankList";
+import { useModalStore } from "@/store/modalStore";
+
+interface SelectItem {
+  label: string;
+  value: string;
+  data: Bank;
+}
 
 export default function ReceiverDetailsScreen() {
   const router = useRouter();
@@ -29,6 +37,26 @@ export default function ReceiverDetailsScreen() {
     swiftCode: "",
     iban: "",
   });
+
+  const { countries, isLoading, error } = useBankList();
+  const selectedCountry = countries.find(
+    (country) => country.country === countryName
+  );
+  const banks = selectedCountry?.banks || [];
+
+  useEffect(() => {
+    if (error) {
+      showModal("error", "Failed to load bank information");
+    }
+  }, [error]);
+
+  const handleBankSelect = (item: SelectItem) => {
+    setForm({
+      ...form,
+      bankName: item.data.bankName,
+      swiftCode: item.data.swiftCode,
+    });
+  };
 
   const submit = () => {
     const { receiverName, bankName, swiftCode, iban } = form;
@@ -58,23 +86,29 @@ export default function ReceiverDetailsScreen() {
           <Text style={styles.title}>Enter Receiver Details</Text>
 
           <FormField
-            title="Receiver Name"
+            title="Receiver Full Name"
             value={form.receiverName}
             handleChangeText={(e) => setForm({ ...form, receiverName: e })}
             placeholder="Enter full name"
           />
           <FormField
-            title="Receive Account Number"
+            title="Receiver Account Number"
             value={form.receiverAccount}
             handleChangeText={(e) => setForm({ ...form, receiverAccount: e })}
-            placeholder="Enter receive account number"
+            placeholder="Enter account number"
             keyboardType="numeric"
           />
-          <FormField
+          <SelectInput
             title="Bank Name"
             value={form.bankName}
-            handleChangeText={(e) => setForm({ ...form, bankName: e })}
-            placeholder="Enter bank name"
+            items={banks.map((bank) => ({
+              label: bank.bankName,
+              value: bank.bankName,
+              data: bank,
+            }))}
+            onSelect={handleBankSelect}
+            placeholder="Select bank"
+            isLoading={isLoading}
           />
           <FormField
             title="SWIFT/BIC Code"
@@ -82,6 +116,7 @@ export default function ReceiverDetailsScreen() {
             handleChangeText={(e) => setForm({ ...form, swiftCode: e })}
             placeholder="Enter SWIFT or BIC code"
             autoCapitalize="characters"
+            editable={false}
           />
           <FormField
             title="IBAN"

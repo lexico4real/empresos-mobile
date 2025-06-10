@@ -14,7 +14,6 @@ import {
   ViewStyle,
 } from "react-native";
 
-// Assuming FormFieldProps is defined in a types file
 export interface FormFieldProps {
   title: string;
   value: string;
@@ -30,7 +29,7 @@ export interface FormFieldProps {
   rightIcon?: React.ReactNode;
   onFocus?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
   onBlur?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
-  [key: string]: any; // To accept other TextInput props
+  [key: string]: any;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -61,7 +60,6 @@ const FormField: React.FC<FormFieldProps> = ({
     if (props.onBlur) props.onBlur(e);
   };
 
-  // Dynamically determine border color
   const borderColor = error
     ? COLORS.danger
     : isFocused

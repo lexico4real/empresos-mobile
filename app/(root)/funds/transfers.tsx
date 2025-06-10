@@ -1,12 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  FlatList,
-  ImageSourcePropType,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import CountryCard from "@/components/cards/country-card";
@@ -15,46 +9,51 @@ import SearchInput from "@/components/form/search-input";
 import AppHeader from "@/components/nav/app-header";
 import icons from "@/constants/icons";
 import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import {
+  CountryListItem as CountryListItemType,
+  useBankList,
+} from "@/hooks/query/useBankList";
 import useTransferStore from "@/store/transferStore";
 
-const commonCountries: Country[] = [
+const commonCountries: CountryListItemType[] = [
   { id: "es", name: "Spain", flag: icons.spainLogo },
-  { id: "us", name: "United States Of America", flag: icons.usaLogo },
+  { id: "us", name: "United States", flag: icons.usaLogo },
   { id: "fr", name: "France", flag: icons.franceLogo },
 ];
-const allCountries: Country[] = [
-  { id: "af", name: "Afghanistan", flag: icons.spainLogo },
-  { id: "al", name: "Albania", flag: icons.spainLogo },
-  // ... more countries
-];
-
-export interface Country {
-  id: string;
-  name: string;
-  flag: ImageSourcePropType;
-}
 
 export default function TransfersScreen() {
   const router = useRouter();
   const [selectedCommonCountry, setSelectedCommonCountry] = useState<
     string | null
   >("es");
+  const [searchQuery, setSearchQuery] = useState("");
+  const { countries, isLoading, error } = useBankList();
 
   const setCountry = useTransferStore((state) => state.setCountry);
 
-  const handleCountrySelect = (country: Country) => {
+  const handleCountrySelect = (country: CountryListItemType) => {
     setCountry(country.id, country.name);
-
     router.push("/funds/receiver-details");
   };
 
+  const formattedCountries: CountryListItemType[] = countries.map(
+    (country) => ({
+      id: country.country.toLowerCase().replace(/\s+/g, "-"),
+      name: country.country,
+      flag: { uri: country.flag },
+      currency: country.currency,
+      currencyCode: country.currencyCode,
+      currencySymbol: country.currencySymbol,
+      banks: country.banks,
+    })
+  );
+
+  const filteredCountries = formattedCountries.filter((country) =>
+    country.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const renderListHeader = () => (
     <>
-      <Text style={styles.title}>
-        To which country do you want to send money?
-      </Text>
-      <SearchInput placeholder="Search by country" />
-
       <View style={styles.commonCountriesSection}>
         <Text style={styles.subtitle}>Most common countries</Text>
         <FlatList
@@ -81,6 +80,15 @@ export default function TransfersScreen() {
     </>
   );
 
+  const renderEmptyList = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>No countries found</Text>
+      <Text style={styles.emptySubtext}>
+        Try searching with different keywords
+      </Text>
+    </View>
+  );
+
   return (
     <>
       <AppHeader title="Transfers" />
@@ -88,8 +96,16 @@ export default function TransfersScreen() {
         style={styles.container}
         edges={["bottom", "left", "right"]}
       >
+        <Text style={styles.title}>
+          To which country do you want to send money?
+        </Text>
+        <SearchInput
+          placeholder="Search by country"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
         <FlatList
-          data={allCountries}
+          data={filteredCountries}
           renderItem={({ item }) => (
             <CountryListItem
               item={item}
@@ -98,7 +114,11 @@ export default function TransfersScreen() {
           )}
           keyExtractor={(item) => item.id}
           ListHeaderComponent={renderListHeader}
-          contentContainerStyle={{ paddingBottom: SIZES.base * 2 }}
+          ListEmptyComponent={renderEmptyList}
+          contentContainerStyle={[
+            styles.listContent,
+            filteredCountries.length === 0 && styles.emptyListContent,
+          ]}
           showsVerticalScrollIndicator={false}
         />
       </SafeAreaView>
@@ -126,5 +146,26 @@ const styles = StyleSheet.create({
   },
   commonCountriesSection: {
     paddingVertical: SIZES.base * 2,
+  },
+  listContent: {
+    paddingBottom: SIZES.base * 2,
+  },
+  emptyListContent: {
+    flex: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: SIZES.base * 4,
+  },
+  emptyText: {
+    ...FONTS.h4,
+    color: COLORS.darkGrey,
+    marginBottom: SIZES.base,
+  },
+  emptySubtext: {
+    ...FONTS.body,
+    color: COLORS.grey,
   },
 });
