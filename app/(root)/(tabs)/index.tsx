@@ -2,10 +2,11 @@ import MenuSvg from "@/assets/svgs/menu-svg";
 import AccountInfoCard from "@/components/cards/account-info-card";
 import { PROFILE_URL, SEND_MONEY_URL } from "@/config/routes";
 import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import useGetTransactionTotal from "@/hooks/query/useGetTransactionTotal";
 import { useUserStore } from "@/store/userStore";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Dimensions,
   Image,
@@ -39,26 +40,25 @@ const creditCardData = {
   movementText: "You have 50 new movements",
 };
 
-const lineData = [
-  {
-    value: 6,
-    dataPointText: "$6",
-    label: "JAN",
-    showStrip: true,
-  },
-  { value: 10, dataPointText: "$10", label: "FEB" },
-  { value: 46, dataPointText: "$46", label: "MAR" },
-].map((item) => ({
-  ...item,
-  customDataPoint: () => <View style={styles.customDataPoint} />,
-}));
-
 export default function IndexScreen() {
   const { user } = useUserStore();
+  const { data: transactionData, isLoading: isLoadingTransactions } =
+    useGetTransactionTotal();
 
   const cardWidth = (DEVICE_WIDTH - SIZES.base * 4 - SIZES.base * 3) / 4;
-
   const chartWidth = DEVICE_WIDTH - 105;
+
+  const lineData = useMemo(() => {
+    if (!transactionData) return [];
+
+    return transactionData.map((item) => ({
+      value: item.total,
+      dataPointText: `$${item.total}`,
+      label: item.month.toUpperCase(),
+      showStrip: true,
+      customDataPoint: () => <View style={styles.customDataPoint} />,
+    }));
+  }, [transactionData]);
 
   const actionMenuItems = [
     {
@@ -109,38 +109,40 @@ export default function IndexScreen() {
         <View style={styles.currentAccountBanner}>
           <Text style={styles.currentAccountHeader}>Current Accounts</Text>
 
-          <LineChart
-            data={lineData}
-            color={"#A0D2CF"}
-            thickness={2}
-            curved
-            yAxisOffset={4}
-            initialSpacing={90}
-            stripOverDataPoints
-            stripWidth={2}
-            dataPointsColor={"#000"}
-            hideYAxisText={true}
-            hideRules={true}
-            xAxisColor={"#A4D1D4"}
-            yAxisColor={"transparent"}
-            xAxisThickness={3}
-            height={80}
-            width={chartWidth}
-            spacing={80}
-            dataPointsHeight={10}
-            dataPointsWidth={5}
-            xAxisLabelTextStyle={{
-              color: "#43474A",
-
-              fontSize: 12,
-
-              marginTop: 5,
-
-              textAlign: "center",
-
-              width: 30,
-            }}
-          />
+          {isLoadingTransactions ? (
+            <View style={styles.chartLoadingContainer}>
+              <Text>Loading chart data...</Text>
+            </View>
+          ) : (
+            <LineChart
+              data={lineData}
+              color={"#A0D2CF"}
+              thickness={2}
+              curved
+              yAxisOffset={4}
+              initialSpacing={90}
+              stripOverDataPoints
+              stripWidth={2}
+              dataPointsColor={"#000"}
+              hideYAxisText={true}
+              hideRules={true}
+              xAxisColor={"#A4D1D4"}
+              yAxisColor={"transparent"}
+              xAxisThickness={3}
+              height={80}
+              width={chartWidth}
+              spacing={80}
+              dataPointsHeight={10}
+              dataPointsWidth={5}
+              xAxisLabelTextStyle={{
+                color: "#43474A",
+                fontSize: 12,
+                marginTop: 5,
+                textAlign: "center",
+                width: 30,
+              }}
+            />
+          )}
 
           <Text style={styles.chartTitle}>Total Balance</Text>
         </View>
@@ -302,23 +304,15 @@ const styles = StyleSheet.create({
   },
   currentAccountBanner: {
     backgroundColor: "#fff",
-
     paddingHorizontal: 20,
-
     paddingVertical: 18,
-
     borderRadius: 10,
-
     marginBottom: 20,
   },
-
   currentAccountHeader: {
     fontSize: 18,
-
     color: "#43474A",
-
     fontWeight: "700",
-
     marginBottom: 20,
   },
   improveBannerTextWrapper: {
@@ -326,5 +320,10 @@ const styles = StyleSheet.create({
     marginLeft: SIZES.base,
     alignItems: "flex-start",
     justifyContent: "flex-start",
+  },
+  chartLoadingContainer: {
+    height: 80,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
