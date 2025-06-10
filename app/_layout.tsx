@@ -1,7 +1,7 @@
-import { SIGN_OPTION_URL } from '@/config/routes';
-import { AuthProvider } from "@/context/auth-context";
-import TanstackProvider from "@/context/tanstack-provider";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SIGN_OPTION_URL } from "@/config/routes";
+import { AuthProvider } from "@/providers/auth-context";
+import TanstackProvider from "@/providers/tanstack-provider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Slot, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
@@ -9,7 +9,6 @@ import "./global.css";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
-
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
@@ -22,11 +21,11 @@ export default function RootLayout() {
         // await clearOnboardingStatus();
 
         // Check if user has completed onboarding
-        const onboardedStatus = await AsyncStorage.getItem('isOnboarded');
-        setIsOnboarded(onboardedStatus === 'true');
+        const onboardedStatus = await AsyncStorage.getItem("isOnboarded");
+        setIsOnboarded(onboardedStatus === "true");
 
         // Artificially delay for 2 seconds to see the splash screen
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
         setIsReady(true);
         await SplashScreen.hideAsync();
@@ -49,9 +48,11 @@ export default function RootLayout() {
     return null;
   }
 
-  return <TanstackProvider>
-    <AuthProvider>
-      <Slot />
-    </AuthProvider>
-  </TanstackProvider>;
+  return (
+    <TanstackProvider>
+      <AuthProvider>
+        <Slot />
+      </AuthProvider>
+    </TanstackProvider>
+  );
 }

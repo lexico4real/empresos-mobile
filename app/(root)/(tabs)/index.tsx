@@ -4,18 +4,20 @@ import CashSvg from "@/assets/svgs/cash-svg";
 import DocumentSvg from "@/assets/svgs/document-svg";
 import GearSvg from "@/assets/svgs/gear-svg";
 import MailSvg from "@/assets/svgs/mail-svg";
-import MenuSvg from "@/assets/svgs/menu-svg";
-import SearchSvg from "@/assets/svgs/search-svg";
 import SmileySvg from "@/assets/svgs/smiley-svg";
+import icons from "@/constants/icons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { router } from "expo-router";
 import React from "react";
 import {
   Dimensions,
   Image,
   ImageBackground,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
@@ -66,159 +68,172 @@ export default function Index() {
   ];
 
   return (
-    <View style={styles.container}>
-      {/* Header View section */}
-      <ImageBackground
-        source={require("@/assets/images/bg-header.png")}
-        resizeMode={"cover"}
-        style={styles.banner}
-      >
-        <SafeAreaView>
-          <View style={styles.headerWrapper}>
-            {/* Left menu */}
-            <View style={styles.logoWrapper}>
-              <Image
-                source={require("@/assets/icons/logo.png")}
-                style={styles.logo}
-              />
-              <View style={styles.logoDivider} />
-              <Text style={styles.LogoTitle}>Empresos</Text>
+    <ScrollView style={styles.container}>
+      <View>
+        {/* Header View section */}
+        <ImageBackground
+          source={require("@/assets/images/bg-header.png")}
+          resizeMode={"cover"}
+          style={styles.banner}
+        >
+          <SafeAreaView>
+            <View style={styles.headerWrapper}>
+              {/* Left menu */}
+              <View style={styles.logoWrapper}>
+                <Image
+                  source={require("@/assets/icons/logo.png")}
+                  style={styles.logo}
+                />
+                <View style={styles.logoDivider} />
+                <Text style={styles.LogoTitle}>Empresos</Text>
+              </View>
+              {/* Right menus */}
+              <View style={styles.headerIcons}>
+                <>
+                  <MailSvg />
+                </>
+                <Image
+                  source={icons.search}
+                  className="w-5 h-5"
+                  resizeMode="contain"
+                />
+                <Image
+                  source={icons.menu}
+                  className="w-5 h-5"
+                  resizeMode="contain"
+                />
+              </View>
             </View>
-            {/* Right menus */}
-            <View style={styles.headerIcons}>
-              <>
-                <MailSvg />
-              </>
-              <>
-                <SearchSvg />
-              </>
-              <>
-                <MenuSvg />
-              </>
+          </SafeAreaView>
+          <Text style={styles.welcomeText}>Hello Frank,</Text>
+          <View style={styles.currentAccountBanner}>
+            <Text style={styles.currentAccountHeader}>Current Accounts</Text>
+            <LineChart
+              data={lineData}
+              color={"#A0D2CF"}
+              thickness={2}
+              curved
+              yAxisOffset={4}
+              initialSpacing={90}
+              stripOverDataPoints
+              stripWidth={2}
+              dataPointsColor={"#000"}
+              hideYAxisText={true}
+              hideRules={true}
+              xAxisColor={"#A4D1D4"}
+              yAxisColor={"transparent"}
+              xAxisThickness={3}
+              height={80}
+              width={chartWidth}
+              spacing={80}
+              dataPointsHeight={10}
+              dataPointsWidth={5}
+              xAxisLabelTextStyle={{
+                color: "#43474A",
+                fontSize: 12,
+                marginTop: 5,
+                textAlign: "center",
+                width: 30,
+              }}
+            />
+            <Text style={styles.chartTitle}>Total Balance</Text>
+          </View>
+          {/* Menus list */}
+          <View style={styles.menusWrapper}>
+            <TouchableOpacity
+              style={[styles.menuCard, { width: cardWidth }]}
+              onPress={() => router.push("/funds/send-money")}
+            >
+              <CashSvg />
+              <Text style={styles.cardTitle}>Send Money</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuCard, { width: cardWidth }]}>
+              <GearSvg />
+              <Text style={styles.cardTitle}>Personal area</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuCard, { width: cardWidth }]}>
+              <DocumentSvg />
+              <Text style={styles.cardTitle}>View bills</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuCard, { width: cardWidth }]}>
+              <DocumentSvg />
+              <Text style={styles.cardTitle}>Explore products</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
+        {/* Floating button */}
+        <View style={styles.bannerAddWrapper}>
+          <View style={styles.bannerAddIcon}>
+            <FontAwesome6 name="add" size={24} color="#E30600" />
+          </View>
+        </View>
+        {/* menu slider section*/}
+        <View style={styles.improveBtnWrapper}>
+          <View style={styles.improveBtnLeft}>
+            <SmileySvg />
+            <Text style={styles.imroveBtnText}>Help us improve</Text>
+          </View>
+          <ArrowRightSvg />
+        </View>
+        {/* Account card section */}
+        <View style={styles.infoCardWrapper}>
+          {/* Header secition */}
+          <View style={styles.infoCardHeaderWrapper}>
+            <View style={styles.infoCardHeaderLeft}>
+              <Text style={styles.infoCardHeaderTitle}>Accounts</Text>
+              <View style={styles.infoCardHeaderCount}>
+                <Text style={styles.infoCardHeaderCountText}>1</Text>
+              </View>
             </View>
+            <ArrowDownSvg />
           </View>
-        </SafeAreaView>
-        <Text style={styles.welcomeText}>Hello Frank,</Text>
-        <View style={styles.currentAccountBanner}>
-          <Text style={styles.currentAccountHeader}>Current Accounts</Text>
-          <LineChart
-            data={lineData}
-            color={"#A0D2CF"}
-            thickness={2}
-            curved
-            yAxisOffset={4}
-            initialSpacing={90}
-            stripOverDataPoints
-            stripWidth={2}
-            dataPointsColor={"#000"}
-            hideYAxisText={true}
-            hideRules={true}
-            xAxisColor={"#A4D1D4"}
-            yAxisColor={"transparent"}
-            xAxisThickness={3}
-            height={80}
-            width={chartWidth}
-            spacing={80}
-            dataPointsHeight={10}
-            dataPointsWidth={5}
-            xAxisLabelTextStyle={{
-              color: "#43474A",
-              fontSize: 12,
-              marginTop: 5,
-              textAlign: "center",
-              width: 30,
-            }}
-          />
-          <Text style={styles.chartTitle}>Total Balance</Text>
-        </View>
-        {/* Menus list */}
-        <View style={styles.menusWrapper}>
-          <View style={[styles.menuCard, { width: cardWidth }]}>
-            <CashSvg />
-            <Text style={styles.cardTitle}>Send Money</Text>
+          <View style={styles.divider} />
+          {/* Content section */}
+          <View style={[styles.infoCardHeaderWrapper]}>
+            <Text style={styles.tableTitle}>Balance</Text>
+            <Text style={styles.tableContent}>$450.00</Text>
           </View>
-          <View style={[styles.menuCard, { width: cardWidth }]}>
-            <GearSvg />
-            <Text style={styles.cardTitle}>Personal area</Text>
-          </View>
-          <View style={[styles.menuCard, { width: cardWidth }]}>
-            <DocumentSvg />
-            <Text style={styles.cardTitle}>View bills</Text>
-          </View>
-          <View style={[styles.menuCard, { width: cardWidth }]}>
-            <DocumentSvg />
-            <Text style={styles.cardTitle}>Explore products</Text>
+          <View style={styles.tableContentSpacing} />
+          {/* banner */}
+          <View style={styles.movementInfoWrapper}>
+            <Text style={styles.movementInfoText}>
+              You have 54 new movements
+            </Text>
           </View>
         </View>
-      </ImageBackground>
-      {/* Floating button */}
-      <View style={styles.bannerAddWrapper}>
-        <View style={styles.bannerAddIcon}>
-          <FontAwesome6 name="add" size={24} color="#E30600" />
+        {/* credit card  section*/}
+        <View style={styles.infoCardWrapper}>
+          {/* Header secition */}
+          <View style={styles.infoCardHeaderWrapper}>
+            <View style={styles.infoCardHeaderLeft}>
+              <Text style={styles.infoCardHeaderTitle}>Credit card</Text>
+              <View style={styles.infoCardHeaderCount}>
+                <Text style={styles.infoCardHeaderCountText}>1</Text>
+              </View>
+            </View>
+            <ArrowDownSvg />
+          </View>
+          <View style={styles.divider} />
+          {/* Content section */}
+          <View style={[styles.infoCardHeaderWrapper]}>
+            <Text style={styles.tableTitle}>Drawn balance</Text>
+            <Text style={styles.tableContent}>$450.00</Text>
+          </View>
+          <View style={styles.tableContentSpacing} />
+          <View style={[styles.infoCardHeaderWrapper]}>
+            <Text style={styles.tableTitle}>Undrawn</Text>
+            <Text style={styles.tableContent}>$450.00</Text>
+          </View>
+          <View style={styles.tableContentSpacing} />
+          {/* banner */}
+          <View style={styles.movementInfoWrapper}>
+            <Text style={styles.movementInfoText}>
+              You have 50 new movements
+            </Text>
+          </View>
         </View>
       </View>
-      {/* menu slider section*/}
-      <View style={styles.improveBtnWrapper}>
-        <View style={styles.improveBtnLeft}>
-          <SmileySvg />
-          <Text style={styles.imroveBtnText}>Help us improve</Text>
-        </View>
-        <ArrowRightSvg />
-      </View>
-      {/* Account card section */}
-      <View style={styles.infoCardWrapper}>
-        {/* Header secition */}
-        <View style={styles.infoCardHeaderWrapper}>
-          <View style={styles.infoCardHeaderLeft}>
-            <Text style={styles.infoCardHeaderTitle}>Accounts</Text>
-            <View style={styles.infoCardHeaderCount}>
-              <Text style={styles.infoCardHeaderCountText}>1</Text>
-            </View>
-          </View>
-          <ArrowDownSvg />
-        </View>
-        <View style={styles.divider} />
-        {/* Content section */}
-        <View style={[styles.infoCardHeaderWrapper]}>
-          <Text style={styles.tableTitle}>Balance</Text>
-          <Text style={styles.tableContent}>$450.00</Text>
-        </View>
-        <View style={styles.tableContentSpacing} />
-        {/* banner */}
-        <View style={styles.movementInfoWrapper}>
-          <Text style={styles.movementInfoText}>You have 54 new movements</Text>
-        </View>
-      </View>
-      {/* credit card  section*/}
-      <View style={styles.infoCardWrapper}>
-        {/* Header secition */}
-        <View style={styles.infoCardHeaderWrapper}>
-          <View style={styles.infoCardHeaderLeft}>
-            <Text style={styles.infoCardHeaderTitle}>Credit card</Text>
-            <View style={styles.infoCardHeaderCount}>
-              <Text style={styles.infoCardHeaderCountText}>1</Text>
-            </View>
-          </View>
-          <ArrowDownSvg />
-        </View>
-        <View style={styles.divider} />
-        {/* Content section */}
-        <View style={[styles.infoCardHeaderWrapper]}>
-          <Text style={styles.tableTitle}>Drawn balance</Text>
-          <Text style={styles.tableContent}>$450.00</Text>
-        </View>
-        <View style={styles.tableContentSpacing} />
-        <View style={[styles.infoCardHeaderWrapper]}>
-          <Text style={styles.tableTitle}>Undrawn</Text>
-          <Text style={styles.tableContent}>$450.00</Text>
-        </View>
-        <View style={styles.tableContentSpacing} />
-        {/* banner */}
-        <View style={styles.movementInfoWrapper}>
-          <Text style={styles.movementInfoText}>You have 50 new movements</Text>
-        </View>
-      </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -226,6 +241,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    paddingBottom: 80,
   },
   banner: {
     paddingHorizontal: 20,
@@ -424,156 +440,3 @@ const styles = StyleSheet.create({
     marginTop: -14,
   },
 });
-
-// import Header from '@/components/common/header'
-// import ThreeMonthLineChart from '@/components/common/three-month-line-chart'
-// import { BILLS_URL, PROFILE_URL, SEND_MONEY_URL } from '@/config/routes'
-// import icons from '@/constants/icons'
-// import { useUserStore } from '@/store/userStore'
-// import { useRouter } from 'expo-router'
-// import React from 'react'
-// import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
-// import { SafeAreaView } from 'react-native-safe-area-context'
-
-// export default function Index() {
-//   const router = useRouter();
-//   const { user } = useUserStore()
-
-//   const greeting = user?.firstName ? `Hello, ${user?.firstName}!` : 'Hello!';
-
-//   return (
-//     <>
-//       <Header
-//         title="Empresos"
-//         logo={icons.logo}
-//         titleAlignment="left"
-//       />
-//       <SafeAreaView edges={['bottom', 'left', 'right']} className="flex-1 bg-white">
-//         <ScrollView className="flex-1 " showsVerticalScrollIndicator={false}>
-//           <View className="relative">
-//             <View className='bg-[#bdb8c9] px-4 py-2 rounded-bl-3xl rounded-br-3xl mb-6'>
-//               {/* Greeting */}
-//               <View className=" mb-4">
-//                 <Text className="text-2xl font-bold text-gray-800">{greeting}</Text>
-//                 {/* <Text className="text-sm text-gray-600 ">
-//                   Balance: {user?.accounts[0].balance}
-//                 </Text> */}
-//                 <Text className="text-sm text-black mt-1">Your finances are looking good</Text>
-//               </View>
-
-//               {/* Current Accounts Graph */}
-//               <View className="bg-[#CEC2CC] rounded-xl p-4 mb-4">
-//                 <Text className="text-base font-bold text-gray-800 mb-4">CURRENT ACCOUNTS</Text>
-
-//                 {/* Simple line graph representation */}
-//                 <ThreeMonthLineChart
-//                   data={[1100, 1500, 1200]}
-//                 />
-//               </View>
-
-//               {/* Action Buttons */}
-//               <View className="flex-row justify-between mb-6">
-//                 <TouchableOpacity className="bg-[#CEC2CC] rounded-lg p-3 items-center w-[22%]"
-//                   onPress={() => router.push(SEND_MONEY_URL)}
-//                 >
-//                   <Image source={icons.sendIcon} className="w-6 h-6 mb-2" />
-//                   <Text className="text-xs text-center text-gray-800">Send money</Text>
-//                 </TouchableOpacity>
-
-//                 <TouchableOpacity className="bg-[#CEC2CC] rounded-lg p-3 items-center w-[22%]"
-//                   onPress={() => router.push(PROFILE_URL)}
-//                 >
-//                   <Image source={icons.settingsIcons} className="w-6 h-6 mb-2" />
-//                   <Text className="text-xs text-center text-gray-800">Personal area</Text>
-//                 </TouchableOpacity>
-
-//                 <TouchableOpacity className="bg-[#CEC2CC] rounded-lg p-3 items-center w-[22%]"
-//                   onPress={() => router.push(BILLS_URL)}
-//                 >
-//                   <Image source={icons.billsIcon} className="w-6 h-6 mb-2" />
-//                   <Text className="text-xs text-center text-gray-800">View bills</Text>
-//                 </TouchableOpacity>
-//                 <TouchableOpacity className="bg-[#CEC2CC] rounded-lg p-3 items-center w-[22%]"
-//                   onPress={() => router.push(BILLS_URL)}
-//                 >
-//                   <Image source={icons.billsIcon} className="w-6 h-6 mb-2" />
-//                   <Text className="text-xs text-center text-gray-800">Explore Products</Text>
-//                 </TouchableOpacity>
-//               </View>
-//             </View>
-
-//             {/* The circle with plus sign */}
-//             <View className="absolute left-1/2 -translate-x-1/2 bottom-[-2px] w-12 h-12 rounded-full bg-[#bdb8c9] items-center justify-center  z-10">
-//               <Text className="text-3xl text-[#C33A31] font-light">+</Text>
-//             </View>
-//           </View>
-
-//           <View className='px-4 mt-6'>
-//             {/* Financing Banner */}
-//             <TouchableOpacity className="bg-[#7d3c5a] rounded-xl p-4 flex-row items-center mb-4">
-//               <View className="w-7 h-7 mr-3 items-center justify-center">
-//                 <Image source={icons.moneyBag} className="w-full h-full" tintColor="#fff" />
-//               </View>
-//               <View className="flex-1">
-//                 <Text className="text-base font-bold text-white">ARE YOU LOOKING FOR FINANCING?</Text>
-//                 <Text className="text-xs text-white opacity-80">See all the options we have for your company</Text>
-//               </View>
-//             </TouchableOpacity>
-
-//             {/* Accounts Section */}
-//             <View className="bg-white rounded-xl p-4 mb-4 border border-gray-100">
-//               <View className="flex-row items-center ">
-//                 <Text className="text-lg font-bold text-gray-800">Accounts</Text>
-//                 <View className="bg-gray-100 rounded-full w-6 h-6 items-center justify-center ml-2">
-//                   <Text className="text-xs font-bold text-gray-800">1</Text>
-//                 </View>
-//                 <Image source={icons.arrowDown} className="w-5 h-5 ml-auto" />
-//               </View>
-
-//               <View className='border-b border-gray-100 mb-4 ' />
-
-//               <View className="flex-row justify-between items-center mb-2">
-//                 <Text className="text-base text-gray-800">Balance</Text>
-//                 <Text className="text-base font-bold text-gray-800">$450.00</Text>
-//               </View>
-
-//               <View className="bg-[#e6f2f7] p-3 rounded-lg mt-2">
-//                 <Text className="text-sm text-gray-800 text-center">You have 54 new movements</Text>
-//               </View>
-//             </View>
-
-//             {/* Credit Card Section */}
-//             <View className="bg-white rounded-xl p-4 mb-4 border border-gray-100">
-//               <View className="flex-row items-center">
-//                 <Text className="text-lg font-bold text-gray-800">Credit Card</Text>
-//                 <View className="bg-gray-100 rounded-full w-6 h-6 items-center justify-center ml-2">
-//                   <Text className="text-xs font-bold text-gray-800">1</Text>
-//                 </View>
-//                 <Image source={icons.arrowDown} className="w-5 h-5 ml-auto" />
-//               </View>
-//               <View className='border-b border-gray-100 mb-4 ' />
-
-//               <View className="flex-row justify-between items-center mb-2">
-//                 <Text className="text-base text-gray-800">Drawn balance</Text>
-//                 <Text className="text-base font-bold text-gray-800">$450.00</Text>
-//               </View>
-
-//               <View className="flex-row justify-between items-center">
-//                 <Text className="text-base text-gray-800">Undrawn</Text>
-//                 <Text className="text-base font-bold text-gray-800">$50.00</Text>
-//               </View>
-//             </View>
-
-//             {/* Extra space at bottom for FAB */}
-//             <View className="h-20" />
-//           </View>
-//         </ScrollView>
-
-//         {/* Floating Action Button */}
-//         <TouchableOpacity className="absolute bottom-6 self-center bg-white w-14 h-14 rounded-full justify-center items-center shadow-md">
-//           <Image source={icons.plus} className="w-6 h-6" tintColor="#e63946" />
-//         </TouchableOpacity>
-//       </SafeAreaView>
-//     </>
-//   )
-// }

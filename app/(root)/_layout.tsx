@@ -1,9 +1,9 @@
-import { HOME_URL, SIGN_IN_URL } from '@/config/routes';
-import { useAuth } from '@/context/auth-context';
-import { authService } from '@/services/auth.service';
-import { Slot, useRouter, useSegments } from 'expo-router';
-import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { HOME_URL, SIGN_IN_URL } from "@/config/routes";
+import { useAuth } from "@/providers/auth-context";
+import { authService } from "@/services/auth.service";
+import { Slot, useRouter, useSegments } from "expo-router";
+import { useEffect } from "react";
+import { ActivityIndicator, View } from "react-native";
 
 export default function RootLayout() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -13,7 +13,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (isLoading) return;
 
-    const inAuthGroup = segments[0] === 'auth';
+    const inAuthGroup = segments[0] === "auth";
 
     if (isAuthenticated && !segments.length) {
       router.replace(HOME_URL);

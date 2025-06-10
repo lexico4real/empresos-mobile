@@ -1,134 +1,124 @@
-import Header from '@/components/common/header';
-import { Recipient, TransferOption } from '@/config/types';
-import icons from '@/constants/icons';
-import { recipients, transferOptions } from '@/data';
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import FAQItem from "@/components/cards/faq-item";
+import SendMoneyItem from "@/components/cards/send-money-item";
+import AppHeader from "@/components/nav/app-header";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-export default function SendMoney() {
-  const router = useRouter();
+const sendingOptions = [
+  {
+    icon: "swap-horizontal-outline",
+    title: "Transfers",
+    subtitle: "National and international",
+  },
+  {
+    icon: "card-outline",
+    title: "Salary and pension payments",
+    subtitle: "Immediate payment",
+  },
+  {
+    icon: "calendar-outline",
+    title: "Scheduled and periodic transfers",
+    subtitle: "Schedule and manage your transfers",
+  },
+];
 
-  const renderRecipient = ({ item }: { item: Recipient }) => {
-    if (item.type === 'new') {
-      return (
-        <TouchableOpacity
-          className='bg-white rounded-xl p-4 flex-1 items-center justify-center mr-4'
-          style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.05,
-            shadowRadius: 2,
-            elevation: 1,
-          }}
-          onPress={() => router.push('/funds/transfer-options')}
-        >
-          <View className='w-12 h-12 bg-[#137E84] rounded-full items-center justify-center mb-2'>
-            <Text className='text-white text-2xl'>+</Text>
-          </View>
-          <Text className='text-base font-medium mb-1'>New transfer</Text>
-          <Text className='text-xs text-gray-500 text-center'>
-            {item.accountNumber}
-          </Text>
-        </TouchableOpacity>
-      );
-    }
+const faqData = [
+  "How to make a periodic transfer?",
+  "How to make a national transfer?",
+  "How to make a deferred transfer?",
+  "How to make a transfer?",
+];
 
-    return (
-      <TouchableOpacity
-        className='bg-white rounded-xl p-4 items-center justify-center w-24 mr-4'
-        style={{
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.05,
-          shadowRadius: 2,
-          elevation: 1,
-        }}
-      >
-        <View className='w-12 h-12 bg-[#E4F4FF] rounded-full items-center justify-center mb-2'>
-          <Text className='text-[#137E84] text-xl font-medium'>{item.initial}</Text>
-        </View>
-        <Text className='text-xs text-gray-500'>{item.accountNumber}</Text>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderTransferOption = ({ item }: { item: TransferOption }) => (
-    <TouchableOpacity
-      className='bg-white rounded-xl p-4 mb-4 flex-row items-center justify-between'
-      style={{
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 1,
-      }}
-    >
-      <View className='flex-row items-center gap-4'>
-        <Image source={icons.moneyIcon} className='w-5 h-5' resizeMode="contain" />
-        <View>
-          <Text className='text-base font-medium'>{item.title}</Text>
-          <Text className='text-sm text-gray-500'>{item.subtitle}</Text>
-        </View>
-      </View>
-      <Image source={icons.rightArrow} className='w-5 h-5' resizeMode="contain" />
-    </TouchableOpacity>
-  );
-
+export default function SendingMoneyScreen() {
   return (
-    <>
-      <Header
-        title="Send Money"
-        showBackArrow={true}
-        backArrowIcon={icons.back}
-        titleAlignment="center"
-      />
-      <SafeAreaView className='flex-1 bg-white' edges={['bottom', 'left', 'right']}>
-        <View className='flex-1 px-6 py-6'>
-          <Text className='text-xl font-bold mb-4'>Choose Recipient</Text>
+    <View style={styles.container}>
+      <AppHeader title="Sending money" canGoBack={true} />
 
-          <FlatList
-            data={recipients}
-            renderItem={renderRecipient}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className='mb-6'
-          />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.optionsListParentContainer}>
+          <Text style={styles.sectionTitle}>All options</Text>
+          {sendingOptions.map((item) => (
+            <View key={item.title}>
+              <SendMoneyItem
+                icon={item.icon as keyof typeof Ionicons.glyphMap}
+                title={item.title}
+                subtitle={item.subtitle}
+                onPress={() => console.log(`Pressed ${item.title}`)}
+              />
+            </View>
+          ))}
+        </View>
 
-          {/* No Data Section */}
-          <View
-            className='bg-white rounded-xl p-8 items-center mb-8'
-            style={{
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.05,
-              shadowRadius: 2,
-              elevation: 1,
-            }}
-          >
-            <Image
-              source={icons.cloudIcon}
-              className='w-8 h-8 mb-4'
-              resizeMode="contain"
-            />
-            <Text className='text-lg font-medium mb-2'>No data yet!</Text>
-            <Text className='text-sm text-gray-500 text-center'>
-              Your history will appear here once you start transactions
-            </Text>
+        <View style={styles.faqCard}>
+          {/* Dark Header */}
+          <View style={styles.faqHeader}>
+            <Text style={styles.faqTitle}>Do you have any doubt?</Text>
           </View>
 
-          <Text className='text-xl font-bold mb-4'>All Options</Text>
-
-          <FlatList
-            data={transferOptions}
-            renderItem={renderTransferOption}
-            keyExtractor={(item) => item.id}
-            scrollEnabled={false}
-          />
+          {/* White Body */}
+          <View style={styles.faqBody}>
+            {faqData.map((question, index) => (
+              <View key={question}>
+                <FAQItem question={question} />
+                {index < faqData.length - 1 && (
+                  <View style={styles.faqDivider} />
+                )}
+              </View>
+            ))}
+          </View>
         </View>
-      </SafeAreaView>
-    </>
+      </ScrollView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  scrollContainer: {
+    paddingBottom: 30,
+  },
+  optionsListParentContainer: {
+    backgroundColor: "#f8f9fa",
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#43474A",
+    marginBottom: 15,
+    paddingHorizontal: 5,
+  },
+  faqCard: {
+    marginHorizontal: 15,
+    marginTop: 10,
+    marginBottom: 20,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    overflow: "hidden",
+    backgroundColor: "#fff",
+  },
+  faqHeader: {
+    backgroundColor: "#004D40",
+    padding: 20,
+  },
+  faqTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#fff",
+  },
+  faqBody: {
+  },
+  faqDivider: {
+    height: 1,
+    backgroundColor: "#F0F0F0",
+    marginLeft: 20,
+    marginRight: 20,
+  },
+});
