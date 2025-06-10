@@ -1,7 +1,7 @@
 import { COLORS, FONTS, SIZES } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface InfoRowProps {
   label: string;
@@ -20,6 +20,8 @@ interface AccountInfoCardProps {
   count: number;
   infoRows: InfoRowProps[];
   movementText: string;
+  open?: boolean;
+  onToggle?: () => void;
 }
 
 export default function AccountInfoCard({
@@ -27,33 +29,47 @@ export default function AccountInfoCard({
   count,
   infoRows,
   movementText,
+  open = true,
+  onToggle,
 }: AccountInfoCardProps) {
   return (
     <View style={styles.cardWrapper}>
-      <View style={styles.cardHeader}>
+      <TouchableOpacity
+        style={styles.cardHeader}
+        onPress={onToggle}
+        activeOpacity={0.7}
+      >
         <View style={styles.headerLeft}>
           <Text style={FONTS.h3}>{title}</Text>
           <View style={styles.countBadge}>
             <Text style={styles.countText}>{count}</Text>
           </View>
         </View>
-        <Ionicons name="chevron-down" size={24} color={COLORS.grey} />
-      </View>
+        <Ionicons
+          name={open ? "chevron-up" : "chevron-down"}
+          size={24}
+          color={COLORS.grey}
+        />
+      </TouchableOpacity>
 
-      <View style={styles.divider} />
+      {open && <View style={styles.divider} />}
 
-      {infoRows.map((row, index) => (
-        <View key={index}>
-          <InfoRow label={row.label} value={row.value} />
-          {index < infoRows.length - 1 && (
-            <View style={{ height: SIZES.base }} />
-          )}
-        </View>
-      ))}
+      {open && (
+        <>
+          {infoRows.map((row, index) => (
+            <View key={index}>
+              <InfoRow label={row.label} value={row.value} />
+              {index < infoRows.length - 1 && (
+                <View style={{ height: SIZES.base }} />
+              )}
+            </View>
+          ))}
 
-      <View style={styles.movementBanner}>
-        <Text style={styles.movementText}>{movementText}</Text>
-      </View>
+          <View style={styles.movementBanner}>
+            <Text style={styles.movementText}>{movementText}</Text>
+          </View>
+        </>
+      )}
     </View>
   );
 }

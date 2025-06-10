@@ -6,7 +6,7 @@ import useGetTransactionTotal from "@/hooks/query/useGetTransactionTotal";
 import { useUserStore } from "@/store/userStore";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -22,28 +22,41 @@ import { LineChart } from "react-native-gifted-charts";
 
 const { width: DEVICE_WIDTH } = Dimensions.get("window");
 
-// Mock Data
-const accountData = {
-  title: "Accounts",
-  count: 1,
-  infoRows: [{ label: "Balance", value: "$450.00" }],
-  movementText: "You have 54 new movements",
-};
-
-const creditCardData = {
-  title: "Credit card",
-  count: 1,
-  infoRows: [
-    { label: "Drawn balance", value: "$450.00" },
-    { label: "Undrawn", value: "$450.00" },
-  ],
-  movementText: "You have 50 new movements",
-};
-
 export default function IndexScreen() {
   const { user } = useUserStore();
   const { data: transactionData, isLoading: isLoadingTransactions } =
     useGetTransactionTotal();
+
+  const [accountsOpen, setAccountsOpen] = useState(true);
+  const [creditCardOpen, setCreditCardOpen] = useState(true);
+
+  const accounts = user?.accounts || [];
+
+  const accountData = {
+    title: "Accounts",
+    count: accounts.length,
+    infoRows: accounts.map((acc) => ({
+      label: `Acct ${acc.accountNumber}`,
+      value: `$${parseFloat(acc.balance).toFixed(2)}`,
+    })),
+    movementText: `You have ${accounts.length} account${
+      accounts.length !== 1 ? "s" : ""
+    }`,
+    open: accountsOpen,
+    onToggle: () => setAccountsOpen((prev) => !prev),
+  };
+
+  const creditCardData = {
+    title: "Credit card",
+    count: 1,
+    infoRows: [
+      { label: "Drawn balance", value: "$450.00" },
+      { label: "Undrawn", value: "$450.00" },
+    ],
+    movementText: "You have 0 new movements",
+    open: creditCardOpen,
+    onToggle: () => setCreditCardOpen((prev) => !prev),
+  };
 
   const cardWidth = (DEVICE_WIDTH - SIZES.base * 4 - SIZES.base * 3) / 4;
   const chartWidth = DEVICE_WIDTH - 105;
@@ -59,6 +72,9 @@ export default function IndexScreen() {
       customDataPoint: () => <View style={styles.customDataPoint} />,
     }));
   }, [transactionData]);
+
+  const allZero =
+    lineData.length > 0 && lineData.every((item) => item.value === 0);
 
   const actionMenuItems = [
     {
@@ -113,6 +129,10 @@ export default function IndexScreen() {
             <View style={styles.chartLoadingContainer}>
               <Text>Loading chart data...</Text>
             </View>
+          ) : allZero ? (
+            <View style={styles.chartLoadingContainer}>
+              <Text>No data available</Text>
+            </View>
           ) : (
             <LineChart
               data={lineData}
@@ -129,7 +149,7 @@ export default function IndexScreen() {
               xAxisColor={"#A4D1D4"}
               yAxisColor={"transparent"}
               xAxisThickness={3}
-              height={80}
+              height={50}
               width={chartWidth}
               spacing={80}
               dataPointsHeight={10}
@@ -305,15 +325,16 @@ const styles = StyleSheet.create({
   currentAccountBanner: {
     backgroundColor: "#fff",
     paddingHorizontal: 20,
-    paddingVertical: 18,
+    paddingVertical: 12,
     borderRadius: 10,
     marginBottom: 20,
+    minHeight: 140,
   },
   currentAccountHeader: {
     fontSize: 18,
     color: "#43474A",
     fontWeight: "700",
-    marginBottom: 20,
+    marginBottom: 12,
   },
   improveBannerTextWrapper: {
     flex: 1,
