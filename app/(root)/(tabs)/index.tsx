@@ -1,5 +1,5 @@
-import MenuSvg from "@/assets/svgs/menu-svg";
 import AccountInfoCard from "@/components/cards/account-info-card";
+import HomeHeader from "@/components/nav/home-header";
 import { PROFILE_URL, SEND_MONEY_URL } from "@/config/routes";
 import { COLORS, FONTS, SIZES } from "@/constants/theme";
 import useGetTransactionTotal from "@/hooks/query/useGetTransactionTotal";
@@ -9,9 +9,7 @@ import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
   Dimensions,
-  Image,
   ImageBackground,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -99,25 +97,11 @@ export default function IndexScreen() {
         resizeMode="cover"
         style={styles.banner}
       >
-        <SafeAreaView>
-          <View style={styles.headerWrapper}>
-            <View style={styles.logoWrapper}>
-              <Image
-                source={require("@/assets/icons/logo.png")}
-                style={styles.logo}
-              />
-              <View style={styles.logoDivider} />
-              <Text style={styles.logoTitle}>Empresos</Text>
-            </View>
-            <View style={styles.headerIcons}>
-              <Ionicons name="mail-outline" size={24} color={COLORS.danger} />
-              <Ionicons name="search-outline" size={24} color={COLORS.danger} />
-              <TouchableOpacity onPress={() => {}}>
-                <MenuSvg />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </SafeAreaView>
+        <HomeHeader
+          onMenuPress={() => {}}
+          onSearchPress={() => {}}
+          onMailPress={() => {}}
+        />
 
         <Text style={styles.welcomeText}>Hello, {user?.firstName}</Text>
 

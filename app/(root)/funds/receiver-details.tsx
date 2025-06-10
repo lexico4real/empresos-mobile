@@ -122,7 +122,7 @@ export default function ReceiverDetailsScreen() {
             title="IBAN"
             value={form.iban}
             handleChangeText={(e) => setForm({ ...form, iban: e })}
-            placeholder="Enter International Bank Account Number"
+            placeholder="Enter IBAN"
             autoCapitalize="characters"
           />
 
