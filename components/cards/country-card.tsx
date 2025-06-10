@@ -1,8 +1,15 @@
-import { Country } from "@/app/(root)/funds/transfers";
 import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import { Country } from "@/hooks/query/useBankList";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface CountryCardProps {
   item: Country;
@@ -21,10 +28,14 @@ export default function CountryCard({
       style={[styles.card, isSelected && styles.selectedCard]}
     >
       <View style={styles.flagContainer}>
-        <Image source={item.flag} style={styles.flag} resizeMode="cover" />
+        <Image
+          source={item.flag as ImageSourcePropType}
+          style={styles.flag}
+          resizeMode="cover"
+        />
       </View>
       <Text style={styles.nameText} numberOfLines={2}>
-        {item.name}
+        {item.country}
       </Text>
       {isSelected && (
         <View style={styles.checkmarkContainer}>

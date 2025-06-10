@@ -1,14 +1,15 @@
-import { Country } from "@/app/(root)/funds/transfers";
+import icons from "@/constants/icons";
 import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import { CountryListItem } from "@/hooks/query/useBankList";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface CountryListItemProps {
-  item: Country;
+  item: CountryListItem;
   onPress: () => void;
 }
 
-export default function CountryListItem({
+export default function CountryListItemComponent({
   item,
   onPress,
 }: CountryListItemProps) {
@@ -16,7 +17,11 @@ export default function CountryListItem({
     <TouchableOpacity onPress={onPress} style={styles.row}>
       <Text style={styles.nameText}>{item.name}</Text>
       <View style={styles.flagContainer}>
-        <Image source={item.flag} style={styles.flag} resizeMode="cover" />
+        <Image
+          source={item.flag ? item.flag : icons.defaultFlag}
+          style={styles.flag}
+          resizeMode="cover"
+        />
       </View>
     </TouchableOpacity>
   );

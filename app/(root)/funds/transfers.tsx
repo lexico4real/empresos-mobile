@@ -41,9 +41,9 @@ export default function TransfersScreen() {
       id: country.country.toLowerCase().replace(/\s+/g, "-"),
       name: country.country,
       flag: { uri: country.flag },
-      currency: country.currency,
-      currencyCode: country.currencyCode,
-      currencySymbol: country.currencySymbol,
+      currency: country.currency || "",
+      currencyCode: country.currencyCode || "",
+      currencySymbol: country.currencySymbol || "",
       banks: country.banks,
     })
   );
@@ -60,7 +60,15 @@ export default function TransfersScreen() {
           data={commonCountries}
           renderItem={({ item }) => (
             <CountryCard
-              item={item}
+              item={{
+                ...item,
+                country: item.name,
+                flag: (item.flag as string),
+                banks: item.banks || [],
+                currency: item.currency || "",
+                currencyCode: item.currencyCode || "",
+                currencySymbol: item.currencySymbol || "",
+              }}
               isSelected={selectedCommonCountry === item.id}
               onPress={() => {
                 setSelectedCommonCountry(item.id);

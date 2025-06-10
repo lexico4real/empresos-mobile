@@ -30,6 +30,7 @@ export default function AmountScreen() {
   const { showModal, hideModal, ...modalState } = useModalStore();
 
   const countryName = useTransferStore((state) => state.countryName);
+  console.log("countryName from store:", countryName);
   const amount = useTransferStore((state) => state.amount);
   const currency = useTransferStore((state) => state.currency);
   const itemDescription = useTransferStore((state) => state.itemDescription);
@@ -40,9 +41,11 @@ export default function AmountScreen() {
   );
 
   const { countries } = useBankList();
+  console.log("countries from useBankList:", countries);
   const selectedCountry = countries.find(
     (country) => country.country === countryName
   );
+  console.log("selectedCountry:", selectedCountry);
 
   const { isPending, handlePostIntlTransaction } = usePostIntlTransaction();
 
@@ -84,6 +87,30 @@ export default function AmountScreen() {
     hideModal();
   }, []);
 
+  if (!countries.length) {
+    return (
+      <>
+        <AppHeader title="Amount" />
+        <SafeAreaView
+          style={styles.container}
+          edges={["bottom", "left", "right"]}
+        >
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={{ paddingBottom: 100 }}
+          >
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionLabel}>Destination country</Text>
+              <View style={styles.destinationCard}>
+                <Text>Loading country data...</Text>
+              </View>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </>
+    );
+  }
+
   return (
     <>
       <AppHeader title="Amount" />
@@ -116,7 +143,7 @@ export default function AmountScreen() {
                     source={
                       selectedCountry?.flag
                         ? { uri: selectedCountry.flag }
-                        : icons.spainLogo
+                        : icons.defaultFlag
                     }
                     style={styles.flag}
                     resizeMode="cover"

@@ -42,7 +42,7 @@ const faqData = [
 export default function TransferOptionsScreen() {
   return (
     <View style={styles.container}>
-      <AppHeader title="Sending money" canGoBack={true} />
+      <AppHeader title="Sending money" />
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.optionsListParentContainer}>

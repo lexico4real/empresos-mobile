@@ -22,6 +22,7 @@ export default function SendMoneyScreen() {
   const setReceiverDetails = useTransferStore(
     (state) => state.setReceiverDetails
   );
+  const setCountry = useTransferStore((state) => state.setCountry);
 
   const recipients = useMemo(() => {
     if (!transactionData?.data) return [];
@@ -48,6 +49,8 @@ export default function SendMoneyScreen() {
   }, [transactionData]);
 
   const handleRecipientSelect = (recipient: any) => {
+    // Log recipient country
+    console.log("Selected recipient.country:", recipient.country);
     // Set receiver details in the transfer store
     setReceiverDetails({
       receiverName: recipient.name,
@@ -57,8 +60,18 @@ export default function SendMoneyScreen() {
       iban: "", // We don't have IBAN in the transaction history
     });
 
-    // Navigate directly to amount screen since we have all the details
-    router.push(AMOUNT_URL);
+    // Set country details
+    setCountry(recipient.country, recipient.country);
+    // Log store value after setting
+    setTimeout(() => {
+      const transferStore = require("@/store/transferStore").default;
+      console.log(
+        "countryName in store after setCountry:",
+        transferStore.getState().countryName
+      );
+      // Navigate directly to amount screen since we have all the details
+      router.push(AMOUNT_URL);
+    }, 100);
   };
 
   return (
