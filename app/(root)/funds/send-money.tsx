@@ -1,10 +1,13 @@
 import RecipientCard from "@/components/cards/recipient-card";
 import SendMoneyItem from "@/components/cards/send-money-item";
 import AppHeader from "@/components/nav/app-header";
-import { TRANSFER_OPTIONS_URL } from "@/config/routes";
+import { AMOUNT_URL, TRANSFER_OPTIONS_URL } from "@/config/routes";
+import useGetTransactionHistory from "@/hooks/query/useGetTransactionHistory";
+import useTransferStore from "@/store/transferStore";
+import { getColorFromName, getInitials } from "@/utils/recipient";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -14,37 +17,53 @@ import {
 } from "react-native";
 import { sendingOptions } from "./transfer-options";
 
-const recipients = [
-  {
-    initials: "C",
-    name: "Claudia",
-    accountNumber: "1234567890",
-    bgColor: "#4A90E2",
-  },
-  {
-    initials: "G",
-    name: "George",
-    accountNumber: "1234567890",
-    bgColor: "#F5A623",
-  },
-  {
-    initials: "GN",
-    name: "Green Corp",
-    accountNumber: "1234567890",
-    bgColor: "#50E3C2",
-  },
-  {
-    initials: "S",
-    name: "Sarah",
-    accountNumber: "1234567890",
-    bgColor: "#BD10E0",
-  },
-];
-
 export default function SendMoneyScreen() {
+  const { data: transactionData, isLoading } = useGetTransactionHistory();
+  const setReceiverDetails = useTransferStore(
+    (state) => state.setReceiverDetails
+  );
+
+  const recipients = useMemo(() => {
+    if (!transactionData?.data) return [];
+
+    // Create a map to store unique recipients
+    const uniqueRecipients = new Map();
+
+    transactionData.data.forEach((transaction) => {
+      const key = `${transaction.receiverName}-${transaction.receiverAccount}`;
+      if (!uniqueRecipients.has(key)) {
+        uniqueRecipients.set(key, {
+          initials: getInitials(transaction.receiverName),
+          name: transaction.receiverName,
+          accountNumber: transaction.receiverAccount,
+          bgColor: getColorFromName(transaction.receiverName),
+          bankName: transaction.receiverBankName,
+          swiftCode: transaction.receiverBankSwiftCode,
+          country: transaction.receiverCountry,
+        });
+      }
+    });
+
+    return Array.from(uniqueRecipients.values());
+  }, [transactionData]);
+
+  const handleRecipientSelect = (recipient: any) => {
+    // Set receiver details in the transfer store
+    setReceiverDetails({
+      receiverName: recipient.name,
+      receiverAccount: recipient.accountNumber,
+      bankName: recipient.bankName,
+      swiftCode: recipient.swiftCode,
+      iban: "", // We don't have IBAN in the transaction history
+    });
+
+    // Navigate directly to amount screen since we have all the details
+    router.push(AMOUNT_URL);
+  };
+
   return (
     <View style={styles.container}>
-      <AppHeader title="Sending money" canGoBack={true} />
+      <AppHeader title="Sending money" />
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* --- "Send to..." Horizontal Scroll Section --- */}
@@ -77,19 +96,31 @@ export default function SendMoneyScreen() {
             </TouchableOpacity>
 
             {/* Recipient Cards */}
-            {recipients.map((recipient) => (
-              <RecipientCard key={recipient.initials} {...recipient} />
-            ))}
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <Text>Loading recipients...</Text>
+              </View>
+            ) : (
+              recipients.map((recipient) => (
+                <RecipientCard
+                  key={recipient.accountNumber}
+                  {...recipient}
+                  onPress={() => handleRecipientSelect(recipient)}
+                />
+              ))
+            )}
           </ScrollView>
         </View>
 
         {/* --- Empty State Section --- */}
-        <View style={styles.emptyStateContainer}>
-          <Text style={styles.emptyStateTitle}>This is very empty</Text>
-          <Text style={styles.emptyStateSubtitle}>
-            You still have no money transfers in this account
-          </Text>
-        </View>
+        {!isLoading && recipients.length === 0 && (
+          <View style={styles.emptyStateContainer}>
+            <Text style={styles.emptyStateTitle}>This is very empty</Text>
+            <Text style={styles.emptyStateSubtitle}>
+              You still have no money transfers in this account
+            </Text>
+          </View>
+        )}
 
         {/* --- "All options" Reusable Section --- */}
         <View style={styles.optionsListParentContainer}>
@@ -184,7 +215,11 @@ const styles = StyleSheet.create({
     color: "#6c757d",
     textAlign: "center",
   },
-
+  // --- Loading State ---
+  loadingContainer: {
+    padding: 20,
+    alignItems: "center",
+  },
   // --- All Options Section ---
   allOptionsContainer: {
     paddingHorizontal: 15,

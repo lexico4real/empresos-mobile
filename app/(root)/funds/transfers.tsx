@@ -83,7 +83,7 @@ export default function TransfersScreen() {
 
   return (
     <>
-      <AppHeader title="Transfers" canGoBack />
+      <AppHeader title="Transfers" />
       <SafeAreaView
         style={styles.container}
         edges={["bottom", "left", "right"]}

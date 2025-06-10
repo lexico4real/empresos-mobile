@@ -6,6 +6,7 @@ interface RecipientCardProps {
   name: string;
   accountNumber: string;
   bgColor: string;
+  onPress?: () => void;
 }
 
 export default function RecipientCard({
@@ -13,9 +14,10 @@ export default function RecipientCard({
   name,
   accountNumber,
   bgColor,
+  onPress,
 }: RecipientCardProps) {
   return (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
       <View style={[styles.avatar, { backgroundColor: bgColor }]}>
         <Text style={styles.initials}>{initials}</Text>
       </View>
