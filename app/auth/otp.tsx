@@ -19,8 +19,10 @@ import { COLORS, FONTS, SIZES } from "@/constants/theme";
 import usePostOtp from "@/hooks/mutation/usePostOtp";
 import useSignIn from "@/hooks/mutation/useSignIn";
 import { SignInData } from "@/lib/declarations";
+import { useModalStore } from "@/store/modalStore";
 
 export default function OtpScreen() {
+  const { hideModal } = useModalStore();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
@@ -107,6 +109,10 @@ export default function OtpScreen() {
       password: userPassword ?? "",
     });
   };
+
+  useEffect(() => {
+    hideModal();
+  }, []);
 
   return (
     <>

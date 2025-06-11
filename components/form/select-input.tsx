@@ -78,7 +78,7 @@ export default function SelectInput({
           ...styles.dropdownListContainer,
           borderColor,
           marginTop: 2,
-          zIndex: 1000,
+          zIndex: 3,
           maxHeight: 250,
         }}
         textStyle={selectedValue ? styles.selectedText : styles.placeholderText}
@@ -104,7 +104,7 @@ export default function SelectInput({
         zIndex={1000}
         autoScroll={true}
         closeAfterSelecting={true}
-        listMode="SCROLLVIEW"
+        listMode="MODAL"
         scrollViewProps={{ showsVerticalScrollIndicator: true }}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
@@ -115,7 +115,7 @@ export default function SelectInput({
 const styles = StyleSheet.create({
   container: {
     marginBottom: SIZES.base * 2,
-    zIndex: 1000, // To ensure dropdown overlays other fields
+    zIndex: 1,
   },
   title: {
     ...FONTS.body,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.base * 2,
     backgroundColor: COLORS.white,
     borderRadius: SIZES.radius,
-    zIndex: 1000,
+    zIndex: 2,
   },
   selectedText: {
     flex: 1,
@@ -157,13 +157,12 @@ const styles = StyleSheet.create({
     marginTop: SIZES.base / 2,
   },
   dropdownListContainer: {
-    flexDirection: "row",
-    alignItems: "center",
     borderWidth: 1,
     width: "100%",
     paddingHorizontal: SIZES.base * 2,
     backgroundColor: COLORS.white,
     borderRadius: SIZES.radius,
-    zIndex: 1000,
+    zIndex: 3,
+    maxHeight: 250,
   },
 });

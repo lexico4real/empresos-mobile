@@ -1,17 +1,36 @@
-import { SIGN_OPTION_URL } from '@/config/routes';
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
+import React, { useRef, useState } from "react";
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { SlideItem } from '@/config/types';
-import { slides } from '@/data';
-import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
-import React, { useRef, useState } from 'react';
-import { Dimensions, FlatList, Image, Platform, StatusBar, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Button from "@/components/button/button";
+import { SIGN_IN_URL } from "@/config/routes";
+import { SlideItem } from "@/config/types";
+import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import { slides } from "@/data";
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
-const Slide = ({ item, currentIndex, totalSlides, onNext, onPrev, onSkip }: {
+const Slide = ({
+  item,
+  currentIndex,
+  totalSlides,
+  onNext,
+  onPrev,
+  onSkip,
+}: {
   item: SlideItem;
   currentIndex: number;
   totalSlides: number;
@@ -21,112 +40,98 @@ const Slide = ({ item, currentIndex, totalSlides, onNext, onPrev, onSkip }: {
 }) => {
   const renderTitle = (title: string, highlight: string) => {
     if (!highlight || !title.includes(highlight)) {
-      return <Text className="text-2xl font-bold text-center">{title}</Text>;
+      return <Text style={styles.titleText}>{title}</Text>;
     }
-
     const parts = title.split(highlight);
     return (
-      <Text className="text-3xl font-bold text-center">
+      <Text style={styles.titleText}>
         {parts[0]}
-        <Text className="text-primary-300">{highlight}</Text>
+        <Text style={{ color: COLORS.primary }}>{highlight}</Text>
         {parts[1]}
       </Text>
     );
   };
 
   return (
-    <View className="w-screen h-screen bg-[#F5F5F5]">
+    <View style={styles.slideContainer}>
       {/* Top Navigation */}
-      <SafeAreaView className="px-5">
-        <View className="flex-row justify-between items-center mt-2.5">
-          <TouchableOpacity onPress={onPrev}>
-            <Ionicons name="chevron-back" size={24} color="#C33A31" className="text-primary-300" />
-          </TouchableOpacity>
-          <Text className="text-base font-medium text-primary-300">Welcome</Text>
-          <TouchableOpacity onPress={onSkip}>
-            <Ionicons name="close" size={24} color="#888" />
-          </TouchableOpacity>
-        </View>
+      <SafeAreaView style={styles.topNav}>
+        <TouchableOpacity onPress={onPrev} disabled={currentIndex === 0}>
+          <Ionicons
+            name="chevron-back"
+            size={24}
+            color={currentIndex === 0 ? "transparent" : COLORS.primary}
+          />
+        </TouchableOpacity>
+        <Text style={styles.topNavTitle}>Welcome</Text>
+        <TouchableOpacity onPress={onSkip}>
+          <Ionicons name="close" size={24} color={COLORS.grey} />
+        </TouchableOpacity>
       </SafeAreaView>
 
       {/* Image Section */}
-      <View className="flex-1 justify-center items-center px-5">
+      <View style={styles.imageContainer}>
         <Image
           source={item.image}
-          className="w-4/5 h-3/5"
+          style={styles.slideImage}
           resizeMode="contain"
         />
       </View>
 
       {/* Content Section */}
-      <View className={`bg-white px-8 pt-10 pb-8 ${Platform.OS === "android" && "my-16"}`}>
-        {/* Title */}
-        <View className="mb-4">
-          {renderTitle(item.title, item.titleHighlight)}
-        </View>
-
-        {/* Subtitle */}
-        <Text className="text-center text-gray-600 mb-8 leading-6">
-          {item.subtitle}
-        </Text>
+      <View style={styles.contentContainer}>
+        {renderTitle(item.title, item.titleHighlight)}
+        <Text style={styles.subtitleText}>{item.subtitle}</Text>
 
         {/* Pagination Dots */}
-        <View className="flex-row justify-center mb-8">
-          {Array(totalSlides).fill(0).map((_, index) => (
-            <View
-              key={index}
-              className={`h-2 mx-0.5 rounded-full ${index === currentIndex
-                ? "w-6 bg-primary-300"
-                : "w-2 bg-gray-200"
-                }`}
-            />
-          ))}
+        <View style={styles.paginationContainer}>
+          {Array(totalSlides)
+            .fill(0)
+            .map((_, index) => (
+              <View
+                key={index}
+                style={[styles.dot, index === currentIndex && styles.activeDot]}
+              />
+            ))}
         </View>
 
         {/* Next Button */}
-        <TouchableOpacity
-          className={`bg-primary-300 py-4 rounded-full items-center mx-5 ${Platform.OS === "android" && "relative "} ${currentIndex === totalSlides - 1 ? "bg-primary-300" : "bg-primary-300 "}`}
+        <Button
+          title={
+            currentIndex === totalSlides - 1 ? "Let's Get Started" : "Next"
+          }
           onPress={onNext}
-        >
-          <Text className="text-white font-semibold text-base">
-            {currentIndex === totalSlides - 1 ? "Let's Get Started" : "Next"}
-          </Text>
-        </TouchableOpacity>
+        />
       </View>
     </View>
   );
 };
 
-export default function Onboarding() {
+export default function OnboardingScreen() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+  const router = useRouter();
 
   const goToNextSlide = () => {
     if (currentSlideIndex < slides.length - 1) {
-      flatListRef.current?.scrollToIndex({
-        index: currentSlideIndex + 1,
-        animated: true
-      });
+      flatListRef.current?.scrollToIndex({ index: currentSlideIndex + 1 });
     } else {
-      goToLogin();
+      completeOnboarding();
     }
   };
 
   const goToPrevSlide = () => {
     if (currentSlideIndex > 0) {
-      flatListRef.current?.scrollToIndex({
-        index: currentSlideIndex - 1,
-        animated: true
-      });
+      flatListRef.current?.scrollToIndex({ index: currentSlideIndex - 1 });
     }
   };
 
-  const goToLogin = async () => {
+  const completeOnboarding = async () => {
     try {
-      await AsyncStorage.setItem('isOnboarded', 'true');
-      router.push(SIGN_OPTION_URL);
+      await AsyncStorage.setItem("isOnboarded", "true");
+      router.replace(SIGN_IN_URL);
     } catch (error) {
-      console.error('Error setting onboarding status:', error);
+      console.error("Error setting onboarding status:", error);
     }
   };
 
@@ -137,19 +142,19 @@ export default function Onboarding() {
   }).current;
 
   return (
-    <View className="flex-1 bg-white">
-      <StatusBar barStyle="dark-content" backgroundColor="#F5F5F5" />
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.lightGrey} />
       <FlatList
         ref={flatListRef}
         data={slides}
-        renderItem={({ item, index }) => (
+        renderItem={({ item }) => (
           <Slide
             item={item}
             currentIndex={currentSlideIndex}
             totalSlides={slides.length}
             onNext={goToNextSlide}
             onPrev={goToPrevSlide}
-            onSkip={goToLogin}
+            onSkip={completeOnboarding}
           />
         )}
         horizontal
@@ -157,12 +162,86 @@ export default function Onboarding() {
         showsHorizontalScrollIndicator={false}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
-        getItemLayout={(data, index) => ({
-          length: width,
-          offset: width * index,
-          index,
-        })}
+        keyExtractor={(item) => item.id}
+        bounces={false}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+  slideContainer: {
+    width: width,
+    height: height,
+    backgroundColor: COLORS.lightGrey,
+    alignItems: "center",
+  },
+  topNav: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: SIZES.base * 3,
+    marginTop: Platform.OS === "android" ? SIZES.base * 2 : 0,
+  },
+  topNavTitle: {
+    ...FONTS.h4,
+    color: COLORS.primary,
+  },
+  imageContainer: {
+    flex: 1.2,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  slideImage: {
+    width: "80%",
+    height: "80%",
+  },
+  contentContainer: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: SIZES.radius * 3,
+    borderTopRightRadius: SIZES.radius * 3,
+    paddingHorizontal: SIZES.base * 4,
+    paddingTop: SIZES.base * 5,
+    paddingBottom: SIZES.base * 4,
+    alignItems: "center",
+  },
+  titleText: {
+    ...FONTS.h2,
+    fontSize: SIZES.h1,
+    textAlign: "center",
+    color: COLORS.secondary,
+    marginBottom: SIZES.base * 2,
+  },
+  subtitleText: {
+    ...FONTS.body,
+    textAlign: "center",
+    color: COLORS.grey,
+    lineHeight: 22,
+    marginBottom: SIZES.base * 4,
+  },
+  paginationContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: SIZES.base * 4,
+  },
+  dot: {
+    height: SIZES.base,
+    width: SIZES.base,
+    borderRadius: SIZES.base / 2,
+    backgroundColor: COLORS.lightBorder,
+    marginHorizontal: SIZES.base / 2,
+  },
+  activeDot: {
+    width: SIZES.base * 3,
+    backgroundColor: COLORS.primary,
+  },
+});

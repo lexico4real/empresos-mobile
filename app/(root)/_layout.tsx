@@ -1,26 +1,11 @@
-import { HOME_URL, SIGN_IN_URL } from "@/config/routes";
 import { useAuth } from "@/providers/auth-context";
 import { authService } from "@/services/auth.service";
-import { Slot, useRouter, useSegments } from "expo-router";
+import { Slot, Stack } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 
 export default function RootLayout() {
   const { isAuthenticated, isLoading } = useAuth();
-  const segments = useSegments();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isLoading) return;
-
-    const inAuthGroup = segments[0] === "auth";
-
-    if (isAuthenticated && !segments.length) {
-      router.replace(HOME_URL);
-    } else if (!isAuthenticated && !inAuthGroup) {
-      router.replace(SIGN_IN_URL);
-    }
-  }, [isAuthenticated, isLoading, segments, router]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -36,5 +21,11 @@ export default function RootLayout() {
     );
   }
 
-  return <Slot />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={isAuthenticated}>
+        <Slot />
+      </Stack.Protected>
+    </Stack>
+  );
 }

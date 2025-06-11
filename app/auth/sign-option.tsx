@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Image, ImageBackground, StyleSheet, Text, View } from "react-native";
@@ -9,6 +10,16 @@ import { COLORS, FONTS, SIZES } from "@/constants/theme";
 
 export default function SignOptionScreen() {
   const router = useRouter();
+
+  const handleNavigation = async (route: string) => {
+    try {
+      await AsyncStorage.setItem("isOnboarded", "true");
+      router.push(route);
+    } catch (error) {
+      console.error("Error setting onboarding status:", error);
+      router.push(route);
+    }
+  };
 
   return (
     <ImageBackground
@@ -31,11 +42,14 @@ export default function SignOptionScreen() {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button title="Sign Up" onPress={() => router.push(SIGN_UP_URL)} />
+          <Button
+            title="Sign Up"
+            onPress={() => handleNavigation(SIGN_UP_URL)}
+          />
 
           <Button
             title="Sign In"
-            onPress={() => router.push(SIGN_IN_URL)}
+            onPress={() => handleNavigation(SIGN_IN_URL)}
             variant="outline"
             containerStyle={styles.signInButton}
             textStyle={styles.signInButtonText}

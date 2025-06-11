@@ -164,7 +164,6 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    // ✅ Use consistent padding for the entire screen content
     padding: SIZES.base * 3,
   },
   title: {
