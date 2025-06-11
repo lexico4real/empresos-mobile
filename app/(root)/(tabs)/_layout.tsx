@@ -20,10 +20,9 @@ const TabIcon = ({
       className="size-6"
     />
     <Text
-      className={`${focused
-        ? "text-red-500 font-rubik-medium"
-        : "text-black-200 font-rubik"
-        } text-xs w-full text-center mt-1`}
+      className={`${
+        focused ? "text-red-500 font-rubik-medium" : "text-black-200 font-rubik"
+      } text-xs w-full text-center mt-1`}
     >
       {title}
     </Text>

@@ -31,4 +31,10 @@ module.exports = {
         process.env.BASE_URL || "https://empresos-backend.onrender.com/api/v1",
     },
   },
+  plugins: [
+    "expo-font",
+    "expo-router",
+    "expo-secure-store",
+    "expo-web-browser",
+  ],
 };
