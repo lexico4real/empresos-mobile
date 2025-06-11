@@ -53,8 +53,7 @@
       },
       "eas": {
         "projectId": "d6671304-2b2c-4874-8db1-4b3939df468f"
-      },
-      "BASE_URL": "http://10.0.2.2:3000/api/v1"
+      }
     },
     "owner": "lexico4real"
   }

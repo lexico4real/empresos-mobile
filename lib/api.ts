@@ -24,7 +24,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  // timeout: 10000, // 10 seconds timeout
+  timeout: 10000, // 10 seconds timeout
 });
 
 // Request interceptor
@@ -55,7 +55,7 @@ api.interceptors.response.use(
     }
     return response;
   },
-  (error) => {
+  async (error) => {
     if (__DEV__) {
       console.error("API Error:", {
         url: error.config?.url,
@@ -65,6 +65,16 @@ api.interceptors.response.use(
         message: error.message,
       });
     }
+
+    // Handle 401 Unauthorized responses
+    if (error.response?.status === 401) {
+      const { authService } = await import("@/services/auth.service");
+      const { router } = await import("expo-router");
+      await authService.signOut();
+      // Navigate to sign in screen
+      router.replace("/auth/sign-in");
+    }
+
     return Promise.reject(error);
   }
 );
