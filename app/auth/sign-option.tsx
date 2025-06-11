@@ -1,49 +1,107 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, ImageBackground } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SIGN_IN_URL, SIGN_UP_URL } from '@/config/routes';
-import images from '@/constants/images';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
+import React from "react";
+import { Image, ImageBackground, StyleSheet, Text, View } from "react-native";
 
-export default function SignOption() {
+import Button from "@/components/button/button";
+import { SIGN_IN_URL, SIGN_UP_URL } from "@/config/routes";
+import images from "@/constants/images";
+import { COLORS, FONTS, SIZES } from "@/constants/theme";
+
+export default function SignOptionScreen() {
   const router = useRouter();
+
+  const handleNavigation = async (route: string) => {
+    try {
+      await AsyncStorage.setItem("isOnboarded", "true");
+      router.push(route);
+    } catch (error) {
+      console.error("Error setting onboarding status:", error);
+      router.push(route);
+    }
+  };
 
   return (
     <ImageBackground
       source={images.LadyWithPhone}
-      className='flex-1 px-8'
+      style={styles.background}
       resizeMode="cover"
     >
-      {/* Black overlay */}
-      <View className="absolute inset-0 bg-black/80" />
+      <View style={styles.overlay} />
 
-      <View className="flex-1 justify-center relative">
+      <View style={styles.contentContainer}>
         <Image
           source={images.empresosIconWhite}
-          className='w-32 h-32 mx-auto my-12'
+          style={styles.logo}
+          resizeMode="contain"
         />
-        <View className="mb-20">
-          {/* <Text className="text-white text-4xl font-bold mb-16">YOU ARE{'\n'}WELCOME</Text> */}
 
-          <View className='flex flex-col items-center justify-center'>
-            <Text className="text-white text-xl mb-2">Hi there!</Text>
-            <Text className="text-white text-xl mb-12">Welcome to Santander.</Text>
-          </View>
+        <View style={styles.welcomeContainer}>
+          <Text style={styles.welcomeText}>Hi there!</Text>
+          <Text style={styles.welcomeText}>Welcome to Santander.</Text>
+        </View>
 
-          <TouchableOpacity
-            onPress={() => router.push(SIGN_UP_URL)}
-            className="bg-[#C33A31] py-4 rounded-full mb-4"
-          >
-            <Text className="text-white text-center text-lg font-medium">Sign Up</Text>
-          </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <Button
+            title="Sign Up"
+            onPress={() => handleNavigation(SIGN_UP_URL)}
+          />
 
-          <TouchableOpacity
-            onPress={() => router.push(SIGN_IN_URL)}
-            className="border border-white py-4 rounded-full"
-          >
-            <Text className="text-white text-center text-lg font-medium">Sign In</Text>
-          </TouchableOpacity>
+          <Button
+            title="Sign In"
+            onPress={() => handleNavigation(SIGN_IN_URL)}
+            variant="outline"
+            containerStyle={styles.signInButton}
+            textStyle={styles.signInButtonText}
+          />
         </View>
       </View>
     </ImageBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    paddingHorizontal: SIZES.base * 4,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logo: {
+    width: 128,
+    height: 128,
+    position: "absolute",
+    top: "20%",
+  },
+  welcomeContainer: {
+    position: "absolute",
+    bottom: "45%",
+    alignItems: "center",
+  },
+  welcomeText: {
+    ...FONTS.h2,
+    color: COLORS.white,
+    textAlign: "center",
+    marginBottom: SIZES.base,
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: "15%",
+    width: "100%",
+    gap: SIZES.base * 2,
+  },
+  signInButton: {
+    backgroundColor: "transparent",
+    borderColor: COLORS.white,
+  },
+  signInButtonText: {
+    color: COLORS.white,
+  },
+});

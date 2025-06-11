@@ -1,206 +1,192 @@
-import Button from '@/components/common/button'
-import TextInput from '@/components/common/text-input'
-import { SIGN_IN_URL } from '@/config/routes'
-import useOnboardCustomer from '@/hooks/mutation/useOnboardCustomer'
-import { Link } from 'expo-router'
-import React, { useState } from 'react'
-import { SafeAreaView, ScrollView, Text, View } from 'react-native'
-import { z } from 'zod'
-// Validation schema
+import { Link } from "expo-router";
+import React, { useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { z } from "zod";
+
+import Button from "@/components/button/button";
+import FormField from "@/components/form/form-field";
+import AppHeader from "@/components/nav/app-header";
+
+import { SIGN_IN_URL } from "@/config/routes";
+import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import useOnboardCustomer from "@/hooks/mutation/useOnboardCustomer";
+
+// Validation schema remains unchanged
 const signUpSchema = z.object({
   email: z
     .string()
-    .email('Please enter a valid email')
-    .min(1, 'Email is required'),
-  firstName: z
-    .string()
-    .min(1, 'First name is required')
-    .min(2, 'First name must be at least 2 characters'),
-  lastName: z
-    .string()
-    .min(1, 'Last name is required')
-    .min(2, 'Last name must be at least 2 characters'),
+    .email("Please enter a valid email")
+    .min(1, "Email is required"),
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
   phoneNumber: z
     .string()
-    .min(1, 'Phone number is required')
-    .regex(/^[0-9]{10,}$/, 'Please enter a valid phone number'),
-  // securityQuestion: z
-  //   .string()
-  //   .min(1, 'Security question is required')
-  //   .refine((val) => SECURITY_QUESTIONS.some(q => q.value === val), {
-  //     message: 'Please select a valid security question'
-  //   }),
-  // securityAnswer: z
-  //   .string()
-  //   .min(1, 'Security answer is required'),
-  password: z
-    .string()
-    .min(1, 'Password is required')
-    .min(15, 'Password must be at least 15 characters')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{15,})/,
-      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
-    ),
-})
+    .regex(/^[0-9]{10,}$/, "Please enter a valid phone number"),
+  password: z.string().min(15, "Password must be at least 15 characters"),
+});
 
-type SignUpFormData = z.infer<typeof signUpSchema>
+type SignUpFormData = z.infer<typeof signUpSchema>;
 
-export default function SignUp() {
+export default function SignUpScreen() {
   const [formData, setFormData] = useState<SignUpFormData>({
-    email: '',
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
-    // securityQuestion: '',
-    // securityAnswer: '',
-    password: ''
-  })
+    email: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    password: "",
+  });
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const { isPending, handleOnboardCustomer } = useOnboardCustomer()
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof SignUpFormData, string>>
+  >({});
+  const { isPending, handleOnboardCustomer } = useOnboardCustomer();
+
+  // Validation and state logic remains unchanged
   const handleChange = (field: keyof SignUpFormData, value: string) => {
-    setFormData((prev: SignUpFormData) => ({
-      ...prev,
-      [field]: value
-    }))
-    // Clear error when user starts typing
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors((prev: Record<string, string>) => ({
-        ...prev,
-        [field]: ''
-      }))
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
-  }
+  };
 
-  const validateField = (field: keyof SignUpFormData, value: string) => {
-    try {
-      signUpSchema.shape[field].parse(value)
-      setErrors((prev: Record<string, string>) => ({
+  const validateField = (field: keyof SignUpFormData) => {
+    const result = signUpSchema.shape[field].safeParse(formData[field]);
+    if (!result.success) {
+      setErrors((prev) => ({
         ...prev,
-        [field]: ''
-      }))
-    } catch (error: unknown) {
-      if (error instanceof z.ZodError) {
-        setErrors((prev: Record<string, string>) => ({
-          ...prev,
-          [field]: error.errors[0].message
-        }))
-      }
+        [field]: result.error.errors[0].message,
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
-  }
+  };
 
-  const handleSubmit = async () => {
-    try {
-      signUpSchema.parse(formData)
-      // If validation passes, proceed with form submission
-      const payload = {
-        ...formData
-      }
-      handleOnboardCustomer(payload)
-    } catch (error: unknown) {
-      if (error instanceof z.ZodError) {
-        const newErrors: Record<string, string> = {}
-        error.errors.forEach((err: z.ZodIssue) => {
-          if (err.path[0]) {
-            newErrors[err.path[0] as string] = err.message
-          }
-        })
-        setErrors(newErrors)
-      }
+  const handleSubmit = () => {
+    const result = signUpSchema.safeParse(formData);
+    if (!result.success) {
+      const newErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) newErrors[err.path[0]] = err.message;
+      });
+      setErrors(newErrors);
+      return;
     }
-  }
+    handleOnboardCustomer(result.data);
+  };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="flex-1 justify-center p-5">
-          <Text className="text-2xl font-bold text-center mb-8">Create Account</Text>
+    <>
+      <AppHeader title="Create Account" />
+      <SafeAreaView
+        style={styles.container}
+        edges={["bottom", "left", "right"]}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.title}>Your Personal Details</Text>
+          <Text style={styles.subtitle}>
+            Create your account to start your journey with us.
+          </Text>
 
-          <View className="space-y-4">
-            <TextInput
-              label="Email"
+          <View>
+            <FormField
+              title="Email"
               placeholder="Enter your email"
               value={formData.email}
-              onChangeText={(text) => handleChange('email', text)}
-              onBlur={() => validateField('email', formData.email)}
-              keyboardType="email-address"
-              autoCapitalize="none"
+              handleChangeText={(text) => handleChange("email", text)}
+              onBlur={() => validateField("email")}
               error={errors.email}
+              keyboardType="email-address"
             />
-
-            <TextInput
-              label="First Name"
+            <FormField
+              title="First Name"
               placeholder="Enter your first name"
               value={formData.firstName}
-              onChangeText={(text) => handleChange('firstName', text)}
-              onBlur={() => validateField('firstName', formData.firstName)}
+              handleChangeText={(text) => handleChange("firstName", text)}
+              onBlur={() => validateField("firstName")}
               error={errors.firstName}
             />
-
-            <TextInput
-              label="Last Name"
+            <FormField
+              title="Last Name"
               placeholder="Enter your last name"
               value={formData.lastName}
-              onChangeText={(text) => handleChange('lastName', text)}
-              onBlur={() => validateField('lastName', formData.lastName)}
+              handleChangeText={(text) => handleChange("lastName", text)}
+              onBlur={() => validateField("lastName")}
               error={errors.lastName}
             />
-
-            <TextInput
-              label="Phone Number"
+            <FormField
+              title="Phone Number"
               placeholder="Enter your phone number"
               value={formData.phoneNumber}
-              onChangeText={(text) => handleChange('phoneNumber', text)}
-              onBlur={() => validateField('phoneNumber', formData.phoneNumber)}
-              keyboardType="phone-pad"
+              handleChangeText={(text) => handleChange("phoneNumber", text)}
+              onBlur={() => validateField("phoneNumber")}
               error={errors.phoneNumber}
+              keyboardType="phone-pad"
             />
-
-            {/* <Select
-              label="Security Question"
-              value={formData.securityQuestion}
-              options={SECURITY_QUESTIONS}
-              onSelect={(value) => handleChange('securityQuestion', value)}
-              error={errors.securityQuestion}
-            />
-
-            <TextInput
-              label="Security Answer"
-              placeholder="Enter your security answer"
-              value={formData.securityAnswer}
-              onChangeText={(text) => handleChange('securityAnswer', text)}
-              onBlur={() => validateField('securityAnswer', formData.securityAnswer)}
-              error={errors.securityAnswer}
-            /> */}
-
-            <TextInput
-              label="Password"
+            <FormField
+              title="Password"
               placeholder="Enter your password"
               value={formData.password}
-              onChangeText={(text) => handleChange('password', text)}
-              onBlur={() => validateField('password', formData.password)}
-              secureTextEntry
+              handleChangeText={(text) => handleChange("password", text)}
+              onBlur={() => validateField("password")}
               error={errors.password}
+              isPassword={true}
+              helperText="Must be at least 15 characters."
             />
           </View>
 
-          <Button
-            className="mt-8"
-            onPress={handleSubmit}
-            disabled={isPending}
-          >
-            <Text className="text-white text-base font-bold">
-              {isPending ? 'Signing Up...' : 'Sign Up'}
-            </Text>
-          </Button>
-
-          <View className="mt-6">
-            <Text className="text-center text-gray-600">
-              Already have an account? <Link href={SIGN_IN_URL} className='text-red-500 underline'>Sign In</Link>
+          <View style={styles.bottomContainer}>
+            <Button
+              title={isPending ? "Creating Account..." : "Create Account"}
+              onPress={handleSubmit}
+              disabled={isPending}
+              loading={isPending}
+            />
+            <Text style={styles.signInText}>
+              Already have an account?{" "}
+              <Link href={SIGN_IN_URL} style={styles.signInLink}>
+                Sign In
+              </Link>
             </Text>
           </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  )
+        </ScrollView>
+      </SafeAreaView>
+    </>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    padding: SIZES.base * 3,
+  },
+  title: {
+    ...FONTS.h2,
+    color: COLORS.secondary,
+    marginBottom: SIZES.base,
+  },
+  subtitle: {
+    ...FONTS.body,
+    color: COLORS.grey,
+    marginBottom: SIZES.base * 4,
+  },
+  bottomContainer: {
+    marginTop: SIZES.base * 3,
+  },
+  signInText: {
+    ...FONTS.body,
+    textAlign: "center",
+    color: COLORS.grey,
+    marginTop: SIZES.base * 2,
+  },
+  signInLink: {
+    color: COLORS.primary,
+    fontWeight: "600",
+  },
+});

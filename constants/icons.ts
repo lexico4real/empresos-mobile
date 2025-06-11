@@ -13,6 +13,7 @@ import close from "@/assets/icons/close.png";
 import cloudIcon from "@/assets/icons/cloud.png";
 import contact from "@/assets/icons/contact.png";
 import cutlery from "@/assets/icons/cutlery.png";
+import defaultFlag from "@/assets/icons/default-flag.png";
 import document from "@/assets/icons/doc.png";
 import dog from "@/assets/icons/dog.png";
 import dumbell from "@/assets/icons/dumbell.png";
@@ -53,7 +54,6 @@ import tax from "@/assets/icons/tax-icon.png";
 import usaLogo from "@/assets/icons/usa.png";
 import wallet from "@/assets/icons/wallet.png";
 import wifi from "@/assets/icons/wifi.png";
-
 
 export default {
   google,
@@ -111,4 +111,5 @@ export default {
   franceLogo,
   germanyLogo,
   spainLogo,
+  defaultFlag,
 };

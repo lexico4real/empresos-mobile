@@ -1,125 +1,155 @@
-import Button from '@/components/common/button';
-import FormField from '@/components/common/form-field';
-import Header from '@/components/common/header';
-import icons from '@/constants/icons';
-import useTransferStore from '@/store/transferStore';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import {
-  Alert,
-  ScrollView,
-  Text
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-// Get the state type from the store file if possible, or redefine here
-interface TransferState {
-  setCountry: (id: string, name: string) => void;
-  setReceiverDetails: (details: { receiverName: string; bankName: string; swiftCode: string; iban: string; receiverAccount: string; }) => void;
+import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import useTransferStore from "@/store/transferStore";
 
+import Button from "@/components/button/button";
+import FormField from "@/components/form/form-field";
+import SelectInput from "@/components/form/select-input";
+import StatusModal from "@/components/modals/status-modal";
+import AppHeader from "@/components/nav/app-header";
+import { AMOUNT_URL } from "@/config/routes";
+import { Bank, useBankList } from "@/hooks/query/useBankList";
+import { useModalStore } from "@/store/modalStore";
+
+interface SelectItem {
+  label: string;
+  value: string;
+  data: Bank;
 }
 
 export default function ReceiverDetailsScreen() {
   const router = useRouter();
-  const { countryId, countryName } = useLocalSearchParams(); // Get passed params
-  const decodedCountryName = countryName ? decodeURIComponent(countryName as string) : 'Selected Country';
+  const { showModal, hideModal, ...modalState } = useModalStore();
 
-  // Get setter function from Zustand store with explicit state type
-  const setReceiverDetails = useTransferStore((state: TransferState) => state.setReceiverDetails);
-  const setCountry = useTransferStore((state: TransferState) => state.setCountry);
+  const countryName = useTransferStore((state) => state.countryName);
+  const setReceiverDetails = useTransferStore(
+    (state) => state.setReceiverDetails
+  );
 
   const [form, setForm] = useState({
-    receiverName: '',
-    receiverAccount: '',
-    bankName: '',
-    swiftCode: '',
-    iban: '',
+    receiverName: "",
+    receiverAccount: "",
+    bankName: "",
+    swiftCode: "",
+    iban: "",
   });
 
-  // Set country in store when component mounts or params change
+  const { countries, isLoading, error } = useBankList();
+  const selectedCountry = countries.find(
+    (country) => country.country === countryName
+  );
+  const banks = selectedCountry?.banks || [];
+
   useEffect(() => {
-    if (countryId && countryName) {
-      setCountry(countryId as string, decodedCountryName);
+    if (error) {
+      showModal("error", "Failed to load bank information");
     }
-  }, [countryId, countryName, decodedCountryName, setCountry]);
+  }, [error]);
 
-  const submit = () => {
-    if (!form.receiverName || !form.bankName || !form.swiftCode || !form.iban) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
-    setReceiverDetails({
-      receiverName: form.receiverName,
-      bankName: form.bankName,
-      swiftCode: form.swiftCode,
-      iban: form.iban,
-      receiverAccount: form.receiverAccount,
+  const handleBankSelect = (item: SelectItem) => {
+    setForm({
+      ...form,
+      bankName: item.data.bankName,
+      swiftCode: item.data.swiftCode,
     });
-
-    // Navigate to the amount screen
-    router.push('/funds/amount');
   };
 
+  const submit = () => {
+    const { receiverName, bankName, swiftCode, iban } = form;
+    if (!receiverName || !bankName || !swiftCode || !iban) {
+      showModal("error", "Please fill in all required fields");
+      return;
+    }
+    setReceiverDetails(form);
+    router.push(AMOUNT_URL);
+  };
+
+  useEffect(() => {
+    hideModal();
+  }, []);
+
   return (
-    <React.Fragment>
-      <Header
-        title={`Transfer to ${decodedCountryName}`}
-        showBackArrow={true}
-        backArrowIcon={icons.back}
-        titleAlignment="center"
-      />
-      <SafeAreaView className="flex-1 bg-gray-50" edges={['bottom', 'left', 'right']}>
-        <ScrollView className="flex-1 px-4 py-6">
-          <Text className="text-lg font-semibold mb-6 text-gray-700">
-            Enter Receiver Details
-          </Text>
+    <>
+      <AppHeader title={`Transfer to ${countryName}`} />
+      <SafeAreaView
+        style={styles.container}
+        edges={["bottom", "left", "right"]}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.title}>Enter Receiver Details</Text>
 
           <FormField
-            title="Receiver Name"
+            title="Receiver Full Name"
             value={form.receiverName}
-            handleChangeText={(e: string) => setForm({ ...form, receiverName: e })}
-            placeholder='Enter full name'
+            handleChangeText={(e) => setForm({ ...form, receiverName: e })}
+            placeholder="Enter full name"
           />
-
           <FormField
-            title="Receive Account Number"
+            title="Receiver Account Number"
             value={form.receiverAccount}
-            handleChangeText={(e: string) => setForm({ ...form, receiverAccount: e })}
-            placeholder="Enter receive account number"
+            handleChangeText={(e) => setForm({ ...form, receiverAccount: e })}
+            placeholder="Enter account number"
+            keyboardType="numeric"
           />
-
-          <FormField
+          <SelectInput
             title="Bank Name"
             value={form.bankName}
-            handleChangeText={(e: string) => setForm({ ...form, bankName: e })}
-            placeholder='Enter bank name'
+            items={banks.map((bank) => ({
+              label: bank.bankName,
+              value: bank.bankName,
+              data: bank,
+            }))}
+            onSelect={handleBankSelect}
+            placeholder="Select bank"
+            isLoading={isLoading}
           />
-
           <FormField
             title="SWIFT/BIC Code"
             value={form.swiftCode}
-            handleChangeText={(e: string) => setForm({ ...form, swiftCode: e })}
-            placeholder='Enter SWIFT or BIC code'
+            handleChangeText={(e) => setForm({ ...form, swiftCode: e })}
+            placeholder="Enter SWIFT or BIC code"
+            autoCapitalize="characters"
+            editable={false}
           />
-
           <FormField
             title="IBAN"
             value={form.iban}
-            handleChangeText={(e: string) => setForm({ ...form, iban: e })}
-            placeholder='Enter International Bank Account Number'
+            handleChangeText={(e) => setForm({ ...form, iban: e })}
+            placeholder="Enter IBAN"
+            autoCapitalize="characters"
           />
 
-          <Button
-            className="bg-red-500 rounded-full py-4 mb-4"
-            onPress={submit}
-          >
-            <Text className="text-center text-white font-medium">
-              Continue
-            </Text>
-          </Button>
-
+          <Button title="Continue" onPress={submit} />
         </ScrollView>
       </SafeAreaView>
-    </React.Fragment>
+      <StatusModal
+        visible={modalState.visible}
+        type={modalState.type}
+        message={modalState.message}
+        onClose={hideModal}
+      />
+    </>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.lightGrey,
+  },
+  scrollContainer: {
+    padding: SIZES.base * 2,
+  },
+  title: {
+    ...FONTS.h3,
+    color: COLORS.darkGrey,
+    marginBottom: SIZES.base * 2,
+  },
+});

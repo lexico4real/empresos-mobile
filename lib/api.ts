@@ -1,38 +1,82 @@
 //axios instance
-import axios from 'axios';
+import axios from "axios";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 
-// Validate environment variable
-if (!process.env.EXPO_PUBLIC_API_URL) {
-  console.error('EXPO_PUBLIC_API_URL is not set in environment variables')
-}
+const getBaseUrl = () => {
+  const baseUrl = Constants.expoConfig?.extra?.BASE_URL;
+
+  // If we're in development and on Android
+  if (__DEV__ && Platform.OS === "android") {
+    // For Android emulator
+    if (Platform.constants.Brand === "google") {
+      return "http://10.0.2.2:3000/api/v1";
+    }
+    // For physical Android device
+    return "http://172.20.10.4:3000/api/v1";
+  }
+
+  return baseUrl;
+};
 
 const api = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL || 'https://empresos-backend.onrender.com/api/v1',
+  baseURL: getBaseUrl(),
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   timeout: 10000, // 10 seconds timeout
-})
+});
 
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
     // Log request for debugging in development
     if (__DEV__) {
-      console.log(`Making request to: ${config.url}`)
+      console.log(`Making request to: ${config.url}`);
+      console.log("Request config:", {
+        baseURL: config.baseURL,
+        headers: config.headers,
+        data: config.data,
+      });
     }
-    return config
+    return config;
   },
   (error) => {
-    console.error('Request error:', error)
-    return Promise.reject(error)
+    console.error("Request error:", error);
+    return Promise.reject(error);
   }
-)
+);
 
 // Response interceptor
 api.interceptors.response.use(
-  (response) => response,
-  (error) => Promise.reject(error)
-)
+  (response) => {
+    if (__DEV__) {
+      console.log(`Response from ${response.config.url}:`, response.data);
+    }
+    return response;
+  },
+  async (error) => {
+    if (__DEV__) {
+      console.error("API Error:", {
+        url: error.config?.url,
+        method: error.config?.method,
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+      });
+    }
 
-export default api
+    // Handle 401 Unauthorized responses
+    if (error.response?.status === 401) {
+      const { authService } = await import("@/services/auth.service");
+      const { router } = await import("expo-router");
+      await authService.signOut();
+      // Navigate to sign in screen
+      router.replace("/auth/sign-in");
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default api;

@@ -2,6 +2,7 @@ import { Tabs } from "expo-router";
 import { Image, ImageSourcePropType, Text, View } from "react-native";
 
 import icons from "@/constants/icons";
+import { useAuth } from "@/providers/auth-context";
 
 const TabIcon = ({
   focused,
@@ -20,10 +21,9 @@ const TabIcon = ({
       className="size-6"
     />
     <Text
-      className={`${focused
-        ? "text-red-500 font-rubik-medium"
-        : "text-black-200 font-rubik"
-        } text-xs w-full text-center mt-1`}
+      className={`${
+        focused ? "text-red-500 font-rubik-medium" : "text-black-200 font-rubik"
+      } text-xs w-full text-center mt-1`}
     >
       {title}
     </Text>
@@ -31,6 +31,8 @@ const TabIcon = ({
 );
 
 const TabsLayout = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <Tabs
       screenOptions={{
@@ -43,36 +45,38 @@ const TabsLayout = () => {
         },
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} icon={icons.home} title="Home" />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="bills"
-        options={{
-          title: "Bills",
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} icon={icons.wallet} title="Bills" />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} icon={icons.person} title="Profile" />
-          ),
-        }}
-      />
+      <Tabs.Protected guard={isAuthenticated}>
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Home",
+            headerShown: false,
+            tabBarIcon: ({ focused }) => (
+              <TabIcon focused={focused} icon={icons.home} title="Home" />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="bills"
+          options={{
+            title: "Bills",
+            headerShown: false,
+            tabBarIcon: ({ focused }) => (
+              <TabIcon focused={focused} icon={icons.wallet} title="Bills" />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: "Profile",
+            headerShown: false,
+            tabBarIcon: ({ focused }) => (
+              <TabIcon focused={focused} icon={icons.person} title="Profile" />
+            ),
+          }}
+        />
+      </Tabs.Protected>
     </Tabs>
   );
 };

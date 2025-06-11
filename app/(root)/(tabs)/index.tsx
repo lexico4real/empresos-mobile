@@ -1,152 +1,334 @@
-import Header from '@/components/common/header'
-import ThreeMonthLineChart from '@/components/common/three-month-line-chart'
-import { BILLS_URL, PROFILE_URL, SEND_MONEY_URL } from '@/config/routes'
-import icons from '@/constants/icons'
-import { useUserStore } from '@/store/userStore'
-import { useRouter } from 'expo-router'
-import React from 'react'
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import AccountInfoCard from "@/components/cards/account-info-card";
+import HomeHeader from "@/components/nav/home-header";
+import { PROFILE_URL, SEND_MONEY_URL } from "@/config/routes";
+import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import useGetTransactionTotal from "@/hooks/query/useGetTransactionTotal";
+import { useUserStore } from "@/store/userStore";
+import { FontAwesome6, Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React, { useMemo, useState } from "react";
+import {
+  Dimensions,
+  ImageBackground,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { LineChart } from "react-native-gifted-charts";
 
-export default function Index() {
-  const router = useRouter();
-  const { user } = useUserStore()
+const { width: DEVICE_WIDTH } = Dimensions.get("window");
 
-  const greeting = user?.firstName ? `Hello, ${user?.firstName}!` : 'Hello!';
+export default function IndexScreen() {
+  const { user } = useUserStore();
+  const { data: transactionData, isLoading: isLoadingTransactions } =
+    useGetTransactionTotal();
+
+  const [accountsOpen, setAccountsOpen] = useState(true);
+  const [creditCardOpen, setCreditCardOpen] = useState(true);
+
+  const accounts = user?.accounts || [];
+
+  const accountData = {
+    title: "Accounts",
+    count: accounts.length,
+    infoRows: accounts.map((acc) => ({
+      label: `Acct ${acc.accountNumber}`,
+      value: `$${parseFloat(acc.balance).toFixed(2)}`,
+    })),
+    movementText: `You have ${accounts.length} account${
+      accounts.length !== 1 ? "s" : ""
+    }`,
+    open: accountsOpen,
+    onToggle: () => setAccountsOpen((prev) => !prev),
+  };
+
+  const creditCardData = {
+    title: "Credit card",
+    count: 1,
+    infoRows: [
+      { label: "Drawn balance", value: "$450.00" },
+      { label: "Undrawn", value: "$450.00" },
+    ],
+    movementText: "You have 0 new movements",
+    open: creditCardOpen,
+    onToggle: () => setCreditCardOpen((prev) => !prev),
+  };
+
+  const cardWidth = (DEVICE_WIDTH - SIZES.base * 4 - SIZES.base * 3) / 4;
+  const chartWidth = DEVICE_WIDTH - 105;
+
+  const lineData = useMemo(() => {
+    if (!transactionData) return [];
+
+    return transactionData.map((item) => ({
+      value: item.total,
+      dataPointText: `$${item.total}`,
+      label: item.month.toUpperCase(),
+      showStrip: true,
+      customDataPoint: () => <View style={styles.customDataPoint} />,
+    }));
+  }, [transactionData]);
+
+  const allZero =
+    lineData.length > 0 && lineData.every((item) => item.value === 0);
+
+  const actionMenuItems = [
+    {
+      icon: "swap-horizontal",
+      text: "Send Money",
+      onPress: () => router.push(SEND_MONEY_URL),
+    },
+    {
+      icon: "settings",
+      text: "Personal area",
+      onPress: () => router.push(PROFILE_URL),
+    },
+    { icon: "document-text", text: "View bills", onPress: () => {} },
+    { icon: "apps", text: "Explore", onPress: () => {} },
+  ];
 
   return (
-    <>
-      <Header
-        title="Empresos"
-        logo={icons.logo}
-        titleAlignment="left"
-      />
-      <SafeAreaView edges={['bottom', 'left', 'right']} className="flex-1 bg-white">
-        <ScrollView className="flex-1 " showsVerticalScrollIndicator={false}>
-          <View className="relative">
-            <View className='bg-[#bdb8c9] px-4 py-2 rounded-bl-3xl rounded-br-3xl mb-6'>
-              {/* Greeting */}
-              <View className=" mb-4">
-                <Text className="text-2xl font-bold text-gray-800">{greeting}</Text>
-                {/* <Text className="text-sm text-gray-600 ">
-                  Balance: {user?.accounts[0].balance}
-                </Text> */}
-                <Text className="text-sm text-black mt-1">Your finances are looking good</Text>
-              </View>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* --- HEADER BANNER --- */}
+      <ImageBackground
+        source={require("@/assets/images/bg-header.png")}
+        resizeMode="cover"
+        style={styles.banner}
+      >
+        <HomeHeader
+          onMenuPress={() => {}}
+          onSearchPress={() => {}}
+          onMailPress={() => {}}
+        />
 
-              {/* Current Accounts Graph */}
-              <View className="bg-[#CEC2CC] rounded-xl p-4 mb-4">
-                <Text className="text-base font-bold text-gray-800 mb-4">CURRENT ACCOUNTS</Text>
+        <Text style={styles.welcomeText}>Hello, {user?.firstName}</Text>
 
-                {/* Simple line graph representation */}
-                <ThreeMonthLineChart
-                  data={[1100, 1500, 1200]}
-                />
-              </View>
+        {/* --- CURRENT ACCOUNT BANNER --- */}
+        <View style={styles.currentAccountBanner}>
+          <Text style={styles.currentAccountHeader}>Current Accounts</Text>
 
-              {/* Action Buttons */}
-              <View className="flex-row justify-between mb-6">
-                <TouchableOpacity className="bg-[#CEC2CC] rounded-lg p-3 items-center w-[22%]"
-                  onPress={() => router.push(SEND_MONEY_URL)}
-                >
-                  <Image source={icons.sendIcon} className="w-6 h-6 mb-2" />
-                  <Text className="text-xs text-center text-gray-800">Send money</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity className="bg-[#CEC2CC] rounded-lg p-3 items-center w-[22%]"
-                  onPress={() => router.push(PROFILE_URL)}
-                >
-                  <Image source={icons.settingsIcons} className="w-6 h-6 mb-2" />
-                  <Text className="text-xs text-center text-gray-800">Personal area</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity className="bg-[#CEC2CC] rounded-lg p-3 items-center w-[22%]"
-                  onPress={() => router.push(BILLS_URL)}
-                >
-                  <Image source={icons.billsIcon} className="w-6 h-6 mb-2" />
-                  <Text className="text-xs text-center text-gray-800">View bills</Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-[#CEC2CC] rounded-lg p-3 items-center w-[22%]"
-                  onPress={() => router.push(BILLS_URL)}
-                >
-                  <Image source={icons.billsIcon} className="w-6 h-6 mb-2" />
-                  <Text className="text-xs text-center text-gray-800">Explore Products</Text>
-                </TouchableOpacity>
-              </View>
+          {isLoadingTransactions ? (
+            <View style={styles.chartLoadingContainer}>
+              <Text>Loading chart data...</Text>
             </View>
-
-            {/* The circle with plus sign */}
-            <View className="absolute left-1/2 -translate-x-1/2 bottom-[-2px] w-12 h-12 rounded-full bg-[#bdb8c9] items-center justify-center  z-10">
-              <Text className="text-3xl text-[#C33A31] font-light">+</Text>
+          ) : allZero ? (
+            <View style={styles.chartLoadingContainer}>
+              <Text>No data available</Text>
             </View>
-          </View>
+          ) : (
+            <LineChart
+              data={lineData}
+              color={"#A0D2CF"}
+              thickness={2}
+              curved
+              yAxisOffset={4}
+              initialSpacing={90}
+              stripOverDataPoints
+              stripWidth={2}
+              dataPointsColor={"#000"}
+              hideYAxisText={true}
+              hideRules={true}
+              xAxisColor={"#A4D1D4"}
+              yAxisColor={"transparent"}
+              xAxisThickness={3}
+              height={50}
+              width={chartWidth}
+              spacing={80}
+              dataPointsHeight={10}
+              dataPointsWidth={5}
+              xAxisLabelTextStyle={{
+                color: "#43474A",
+                fontSize: 12,
+                marginTop: 5,
+                textAlign: "center",
+                width: 30,
+              }}
+            />
+          )}
 
-          <View className='px-4 mt-6'>
-            {/* Financing Banner */}
-            <TouchableOpacity className="bg-[#7d3c5a] rounded-xl p-4 flex-row items-center mb-4">
-              <View className="w-7 h-7 mr-3 items-center justify-center">
-                <Image source={icons.moneyBag} className="w-full h-full" tintColor="#fff" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base font-bold text-white">ARE YOU LOOKING FOR FINANCING?</Text>
-                <Text className="text-xs text-white opacity-80">See all the options we have for your company</Text>
-              </View>
+          <Text style={styles.chartTitle}>Total Balance</Text>
+        </View>
+
+        {/* --- ACTION MENU --- */}
+        <View style={styles.actionMenuWrapper}>
+          {actionMenuItems.map((item) => (
+            <TouchableOpacity
+              key={item.text}
+              style={[styles.actionMenuCard, { width: cardWidth }]}
+              onPress={item.onPress}
+            >
+              <Ionicons
+                name={item.icon as any}
+                size={28}
+                color={COLORS.primary}
+              />
+              <Text style={styles.actionMenuTitle}>{item.text}</Text>
             </TouchableOpacity>
+          ))}
+        </View>
+      </ImageBackground>
 
-            {/* Accounts Section */}
-            <View className="bg-white rounded-xl p-4 mb-4 border border-gray-100">
-              <View className="flex-row items-center ">
-                <Text className="text-lg font-bold text-gray-800">Accounts</Text>
-                <View className="bg-gray-100 rounded-full w-6 h-6 items-center justify-center ml-2">
-                  <Text className="text-xs font-bold text-gray-800">1</Text>
-                </View>
-                <Image source={icons.arrowDown} className="w-5 h-5 ml-auto" />
-              </View>
+      {/* Floating button */}
+      <View style={styles.bannerAddWrapper}>
+        <View style={styles.bannerAddIcon}>
+          <FontAwesome6 name="add" size={24} color="#E30600" />
+        </View>
+      </View>
 
-              <View className='border-b border-gray-100 mb-4 ' />
+      {/* --- FINANCING BANNER --- */}
+      <TouchableOpacity style={styles.improveBanner}>
+        <Ionicons name="wallet-outline" size={24} color={COLORS.white} />
+        <View style={styles.improveBannerTextWrapper}>
+          <Text style={styles.improveBannerText}>
+            Are you looking for financing?
+          </Text>
+          <Text style={styles.improveBannerSubText}>
+            See all the options we have for your company
+          </Text>
+        </View>
+        <Ionicons name="chevron-forward" size={22} color={COLORS.white} />
+      </TouchableOpacity>
 
-              <View className="flex-row justify-between items-center mb-2">
-                <Text className="text-base text-gray-800">Balance</Text>
-                <Text className="text-base font-bold text-gray-800">$450.00</Text>
-              </View>
-
-              <View className="bg-[#e6f2f7] p-3 rounded-lg mt-2">
-                <Text className="text-sm text-gray-800 text-center">You have 54 new movements</Text>
-              </View>
-            </View>
-
-            {/* Credit Card Section */}
-            <View className="bg-white rounded-xl p-4 mb-4 border border-gray-100">
-              <View className="flex-row items-center">
-                <Text className="text-lg font-bold text-gray-800">Credit Card</Text>
-                <View className="bg-gray-100 rounded-full w-6 h-6 items-center justify-center ml-2">
-                  <Text className="text-xs font-bold text-gray-800">1</Text>
-                </View>
-                <Image source={icons.arrowDown} className="w-5 h-5 ml-auto" />
-              </View>
-              <View className='border-b border-gray-100 mb-4 ' />
-
-              <View className="flex-row justify-between items-center mb-2">
-                <Text className="text-base text-gray-800">Drawn balance</Text>
-                <Text className="text-base font-bold text-gray-800">$450.00</Text>
-              </View>
-
-              <View className="flex-row justify-between items-center">
-                <Text className="text-base text-gray-800">Undrawn</Text>
-                <Text className="text-base font-bold text-gray-800">$50.00</Text>
-              </View>
-            </View>
-
-            {/* Extra space at bottom for FAB */}
-            <View className="h-20" />
-          </View>
-        </ScrollView>
-
-        {/* Floating Action Button */}
-        <TouchableOpacity className="absolute bottom-6 self-center bg-white w-14 h-14 rounded-full justify-center items-center shadow-md">
-          <Image source={icons.plus} className="w-6 h-6" tintColor="#e63946" />
-        </TouchableOpacity>
-      </SafeAreaView>
-    </>
-  )
+      {/* --- ACCOUNT INFO CARDS --- */}
+      <AccountInfoCard {...accountData} />
+      <AccountInfoCard {...creditCardData} />
+    </ScrollView>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: COLORS.white },
+  banner: {
+    paddingHorizontal: SIZES.base * 2,
+    paddingBottom: SIZES.base * 1.5,
+    backgroundColor: COLORS.lightGrey,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
+  headerWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: SIZES.base * 2,
+  },
+  logoWrapper: { flexDirection: "row", alignItems: "center", gap: SIZES.base },
+  logo: { width: 32, height: 32 },
+  logoDivider: { height: 32, width: 2, backgroundColor: COLORS.primary },
+  logoTitle: { fontSize: 16, color: COLORS.primary, fontWeight: "500" },
+  headerIcons: { flexDirection: "row", alignItems: "center", gap: 20 },
+  welcomeText: { ...FONTS.h3, marginBottom: SIZES.base * 2 },
+  statsCard: {
+    backgroundColor: COLORS.white,
+    padding: SIZES.base * 2,
+    borderRadius: SIZES.radius,
+    marginBottom: SIZES.base * 2,
+  },
+  customDataPoint: {
+    width: 14,
+    height: 14,
+    backgroundColor: COLORS.white,
+    borderWidth: 3,
+    borderRadius: 7,
+    borderColor: COLORS.tertiary,
+  },
+  chartTitle: {
+    fontSize: 10,
+    color: COLORS.black,
+    fontWeight: "600",
+    position: "absolute",
+    bottom: SIZES.base * 2,
+    left: SIZES.base * 2,
+  },
+  actionMenuWrapper: { flexDirection: "row", justifyContent: "space-between" },
+  actionMenuCard: {
+    backgroundColor: COLORS.white,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: SIZES.radius,
+    paddingVertical: SIZES.base,
+    height: 80,
+    marginBottom: SIZES.base * 2,
+  },
+  actionMenuTitle: {
+    fontSize: 12,
+    color: COLORS.black,
+    textAlign: "center",
+    marginTop: SIZES.base,
+    flexWrap: "wrap",
+  },
+  fabContainer: {
+    height: 60,
+    width: 60,
+    backgroundColor: COLORS.white,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 30,
+    marginTop: -30,
+    alignSelf: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  improveBanner: {
+    backgroundColor: COLORS.secondary,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginHorizontal: 15,
+    gap: SIZES.base * 0.5,
+    borderRadius: SIZES.radius,
+    padding: SIZES.base * 1.5,
+    marginVertical: 20,
+  },
+  improveBannerText: {
+    ...FONTS.h4,
+    color: COLORS.white,
+    fontWeight: "700",
+  },
+  improveBannerSubText: {
+    ...FONTS.body,
+    color: COLORS.white,
+  },
+  bannerAddIcon: {
+    height: 60,
+    width: 60,
+    backgroundColor: "#f8f9fa",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 30,
+  },
+  bannerAddWrapper: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: -30,
+  },
+  currentAccountBanner: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 10,
+    marginBottom: 20,
+    minHeight: 140,
+  },
+  currentAccountHeader: {
+    fontSize: 18,
+    color: "#43474A",
+    fontWeight: "700",
+    marginBottom: 12,
+  },
+  improveBannerTextWrapper: {
+    flex: 1,
+    marginLeft: SIZES.base,
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+  },
+  chartLoadingContainer: {
+    height: 80,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

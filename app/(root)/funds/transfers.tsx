@@ -1,125 +1,179 @@
-import Header from "@/components/common/header";
-import SearchInput from "@/components/common/search";
-import icons from "@/constants/icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// --- Dummy Data (Replace with your actual data and flag sources) ---
-const commonCountries = [
-  { id: "es", name: "Spain", flag: icons.spainLogo }, // Replace with actual flag icon
-  { id: "us", name: "United States Of America", flag: icons.usaLogo },
+import CountryCard from "@/components/cards/country-card";
+import CountryListItem from "@/components/cards/country-list-item";
+import SearchInput from "@/components/form/search-input";
+import AppHeader from "@/components/nav/app-header";
+import icons from "@/constants/icons";
+import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import {
+  CountryListItem as CountryListItemType,
+  useBankList,
+} from "@/hooks/query/useBankList";
+import useTransferStore from "@/store/transferStore";
+
+const commonCountries: CountryListItemType[] = [
+  { id: "es", name: "Spain", flag: icons.spainLogo },
+  { id: "us", name: "United States", flag: icons.usaLogo },
   { id: "fr", name: "France", flag: icons.franceLogo },
-  { id: "de", name: "Germany", flag: icons.germanyLogo },
-  { id: "ae", name: "United Arab Emirates", flag: icons.spainLogo },
 ];
 
-const allCountries = [
-  { id: "af", name: "Afghanistan", flag: icons.spainLogo },
-  { id: "al", name: "Albania", flag: icons.spainLogo },
-  { id: "dz", name: "Algeria", flag: icons.spainLogo },
-  { id: "as", name: "American Samoa", flag: icons.spainLogo },
-  { id: "ad", name: "Andorra", flag: icons.spainLogo },
-  // Add more countries...
-];
-// --- End Dummy Data ---
-
-export default function Transfers() {
+export default function TransfersScreen() {
   const router = useRouter();
-  const [selectedCommonCountry, setSelectedCommonCountry] = useState<string | null>("es"); // Default selection
+  const [selectedCommonCountry, setSelectedCommonCountry] = useState<
+    string | null
+  >("es");
+  const [searchQuery, setSearchQuery] = useState("");
+  const { countries, isLoading, error } = useBankList();
 
-  const handleCountrySelect = (countryId: string, countryName: string) => {
-    router.push(`/funds/receiver-details?countryId=${countryId}&countryName=${encodeURIComponent(countryName)}`);
+  const setCountry = useTransferStore((state) => state.setCountry);
+
+  const handleCountrySelect = (country: CountryListItemType) => {
+    setCountry(country.id, country.name);
+    router.push("/funds/receiver-details");
   };
 
-  const renderCommonCountry = ({ item }: { item: typeof commonCountries[0] }) => {
-    const isSelected = selectedCommonCountry === item.id;
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          setSelectedCommonCountry(item.id);
-          handleCountrySelect(item.id, item.name);
-        }}
-        className={`items-center justify-center p-4 rounded-xl border ${isSelected ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white'} w-32 h-32 mr-3`}
-        style={{ elevation: 1 }}
-      >
-        {/* Replace with actual flag component/image */}
-        <View className="w-10 h-10 rounded-full bg-gray-300 mb-2 items-center justify-center overflow-hidden">
-          <Image source={item.flag} className='w-full h-full' resizeMode='cover' />
-        </View>
-        <Text className="text-center text-xs font-medium text-gray-700" numberOfLines={2}>{item.name}</Text>
-        {isSelected && (
-          <View className="absolute top-1 right-1 bg-green-500 rounded-full w-4 h-4 items-center justify-center">
-            <Image source={icons.spainLogo} className="w-2 h-2" tintColor="white" />
-          </View>
-        )}
-      </TouchableOpacity>
-    );
-  };
+  const formattedCountries: CountryListItemType[] = countries.map(
+    (country) => ({
+      id: country.country.toLowerCase().replace(/\s+/g, "-"),
+      name: country.country,
+      flag: { uri: country.flag },
+      currency: country.currency || "",
+      currencyCode: country.currencyCode || "",
+      currencySymbol: country.currencySymbol || "",
+      banks: country.banks,
+    })
+  );
+
+  const filteredCountries = formattedCountries.filter((country) =>
+    country.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const renderListHeader = () => (
+    <>
+      <View style={styles.commonCountriesSection}>
+        <Text style={styles.subtitle}>Most common countries</Text>
+        <FlatList
+          data={commonCountries}
+          renderItem={({ item }) => (
+            <CountryCard
+              item={{
+                ...item,
+                country: item.name,
+                flag: (item.flag as string),
+                banks: item.banks || [],
+                currency: item.currency || "",
+                currencyCode: item.currencyCode || "",
+                currencySymbol: item.currencySymbol || "",
+              }}
+              isSelected={selectedCommonCountry === item.id}
+              onPress={() => {
+                setSelectedCommonCountry(item.id);
+                handleCountrySelect(item);
+              }}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingLeft: SIZES.base * 2 }}
+        />
+      </View>
+      <Text style={[styles.subtitle, { paddingHorizontal: SIZES.base * 2 }]}>
+        All the countries
+      </Text>
+    </>
+  );
+
+  const renderEmptyList = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>No countries found</Text>
+      <Text style={styles.emptySubtext}>
+        Try searching with different keywords
+      </Text>
+    </View>
+  );
 
   return (
-    <React.Fragment>
-      <Header
-        title="Transfers"
-        showBackArrow={true}
-        backArrowIcon={icons.back}
-        titleAlignment="center"
-      />
-      <SafeAreaView className="flex-1 bg-gray-50" edges={["bottom", "left", "right"]}>
-
-        <View className="flex-1">
-          <View className="px-4 pt-6 pb-2">
-
-            <Text className="text-lg font-semibold mb-4 text-gray-700">To which country do you want to send money?</Text>
-          </View>
-
-          <SearchInput
-            placeholder="Search by country"
-
-          />
-
-          {/* Most Common Countries Section */}
-          <View className="py-6">
-            <Text className="text-base font-semibold mb-4 text-gray-600 px-4">
-              Most common countries
-            </Text>
-            <FlatList
-              data={commonCountries}
-              renderItem={renderCommonCountry}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingLeft: 16, paddingRight: 16 }}
-              className="mb-4" // Add some margin below the list
+    <>
+      <AppHeader title="Transfers" />
+      <SafeAreaView
+        style={styles.container}
+        edges={["bottom", "left", "right"]}
+      >
+        <Text style={styles.title}>
+          To which country do you want to send money?
+        </Text>
+        <SearchInput
+          placeholder="Search by country"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <FlatList
+          data={filteredCountries}
+          renderItem={({ item }) => (
+            <CountryListItem
+              item={item}
+              onPress={() => handleCountrySelect(item)}
             />
-          </View>
-
-          {/* All Countries Section */}
-          <View className="px-4 pb-6 flex-1">
-            <Text className="text-base font-semibold mb-4 text-gray-600">
-              All the countries
-            </Text>
-            {/* Using ScrollView for the rest of the content including 'All countries' */}
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {allCountries.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  className="bg-white rounded-lg p-4 mb-3 flex-row items-center justify-between"
-                  style={{ elevation: 1 }}
-                  onPress={() => handleCountrySelect(item.id, item.name)}
-                >
-                  <Text className="text-sm text-gray-800">{item.name}</Text>
-                  {/* Replace with actual flag component/image */}
-                  <View className="w-6 h-6 rounded-full bg-gray-300 items-center justify-center overflow-hidden">
-                    <Image source={item.flag} className='w-full h-full' resizeMode='cover' />
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-        </View>
+          )}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={renderListHeader}
+          ListEmptyComponent={renderEmptyList}
+          contentContainerStyle={[
+            styles.listContent,
+            filteredCountries.length === 0 && styles.emptyListContent,
+          ]}
+          showsVerticalScrollIndicator={false}
+        />
       </SafeAreaView>
-    </React.Fragment>
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.lightGrey,
+  },
+  title: {
+    ...FONTS.h3,
+    color: COLORS.darkGrey,
+    paddingHorizontal: SIZES.base * 2,
+    marginBottom: SIZES.base * 2,
+    paddingTop: SIZES.base * 2,
+  },
+  subtitle: {
+    ...FONTS.h4,
+    color: COLORS.darkGrey,
+    marginBottom: SIZES.base * 1.5,
+    paddingHorizontal: SIZES.base * 2,
+  },
+  commonCountriesSection: {
+    paddingVertical: SIZES.base * 2,
+  },
+  listContent: {
+    paddingBottom: SIZES.base * 2,
+  },
+  emptyListContent: {
+    flex: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: SIZES.base * 4,
+  },
+  emptyText: {
+    ...FONTS.h4,
+    color: COLORS.darkGrey,
+    marginBottom: SIZES.base,
+  },
+  emptySubtext: {
+    ...FONTS.body,
+    color: COLORS.grey,
+  },
+});

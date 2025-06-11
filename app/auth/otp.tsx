@@ -1,26 +1,41 @@
-import Button from '@/components/common/button';
-import Header from '@/components/common/header';
-import icons from '@/constants/icons';
-import usePostOtp from '@/hooks/mutation/usePostOtp';
-import useSignIn from '@/hooks/mutation/useSignIn';
-import { SignInData } from '@/lib/declarations';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Clipboard, KeyboardAvoidingView, Modal, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Clipboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Otp() {
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [userEmail, setUserEmail] = useState('');
-  const [userPassword, setUserPassword] = useState('');
+import Button from "@/components/button/button";
+import AppHeader from "@/components/nav/app-header";
+
+import { COLORS, FONTS, SIZES } from "@/constants/theme";
+import usePostOtp from "@/hooks/mutation/usePostOtp";
+import useSignIn from "@/hooks/mutation/useSignIn";
+import { SignInData } from "@/lib/declarations";
+import { useModalStore } from "@/store/modalStore";
+
+export default function OtpScreen() {
+  const { hideModal } = useModalStore();
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const inputRefs = useRef<TextInput[]>([]);
 
-  const { isPending, handleSignIn } = useSignIn()
-  const { isPending: isPendingResend, handlePostOtp } = usePostOtp()
+  const { isPending, handleSignIn } = useSignIn();
+  const { isPending: isPendingResend, handlePostOtp } = usePostOtp();
 
   useEffect(() => {
     const loadEmail = async () => {
-      const email = await AsyncStorage.getItem('userEmail');
-      const password = await AsyncStorage.getItem('userPassword');
+      const email = await AsyncStorage.getItem("userEmail");
+      const password = await AsyncStorage.getItem("userPassword");
       if (email) setUserEmail(email);
       if (password) setUserPassword(password);
     };
@@ -31,10 +46,10 @@ export default function Otp() {
     // Handle paste operation
     if (text.length > 1) {
       // Clean the pasted text to only include numbers
-      const cleanedText = text.replace(/\D/g, '').slice(0, 6);
+      const cleanedText = text.replace(/\D/g, "").slice(0, 6);
 
       if (cleanedText.length === 6) {
-        const newOtp = cleanedText.split('');
+        const newOtp = cleanedText.split("");
         setOtp(newOtp);
         inputRefs.current[5]?.focus();
         return;
@@ -56,124 +71,197 @@ export default function Otp() {
   const handlePasteButton = async () => {
     try {
       const clipboardContent = await Clipboard.getString();
-      const cleanedText = clipboardContent.replace(/\D/g, '').slice(0, 6);
+      const cleanedText = clipboardContent.replace(/\D/g, "").slice(0, 6);
 
       if (cleanedText.length === 6) {
-        const newOtp = cleanedText.split('');
+        const newOtp = cleanedText.split("");
         setOtp(newOtp);
         inputRefs.current[5]?.focus();
       }
     } catch (error) {
-      console.error('Error reading clipboard:', error);
+      console.error("Error reading clipboard:", error);
     }
   };
 
   const handleKeyPress = (e: any, index: number) => {
-    if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
+    if (e.nativeEvent.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
   const handleVerify = async () => {
-    const otpString = otp.join('');
+    const otpString = otp.join("");
     if (otpString.length === 6) {
-      const userSecret = await AsyncStorage.getItem('userSecret');
+      const userSecret = await AsyncStorage.getItem("userSecret");
       const signInData: SignInData = {
-        email: userEmail ?? '',
-        password: userPassword ?? '',
+        email: userEmail ?? "",
+        password: userPassword ?? "",
         otp: otpString,
-        secret: userSecret ?? ''
-      }
-      handleSignIn(signInData)
+        secret: userSecret ?? "",
+      };
+      handleSignIn(signInData);
     }
   };
 
   const handleResend = () => {
     handlePostOtp({
-      email: userEmail ?? '',
-      password: userPassword ?? ''
-    })
-  }
+      email: userEmail ?? "",
+      password: userPassword ?? "",
+    });
+  };
+
+  useEffect(() => {
+    hideModal();
+  }, []);
 
   return (
     <>
-      <Header
-        title="Verify OTP"
-        showBackArrow={true}
-        backArrowIcon={icons.back}
-        titleAlignment="center"
-      />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1 "
+      <AppHeader title="Verify OTP" />
+      <SafeAreaView
+        style={styles.container}
+        edges={["bottom", "left", "right"]}
       >
-        <View className="flex-1 px-5 justify-center bg-white">
-          <View className="mt-12">
-            <Text className="text-2xl font-semibold text-center mb-2">
-              Enter Verification Code
-            </Text>
-            <Text className="text-gray-600 text-center mb-8">
-              We have sent a verification code to your email: {userEmail}
-            </Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.container}
+        >
+          <View style={styles.content}>
+            <View
+              style={{
+                gap: SIZES.base * 4,
+                marginTop: SIZES.base * 2,
+                flex: 2,
+                justifyContent: "center",
+              }}
+            >
+              <View>
+                <Text style={styles.title}>Enter Verification Code</Text>
+                <Text style={styles.subtitle}>
+                  We have sent a verification code to your email: {userEmail}
+                </Text>
+              </View>
 
-            <View className="flex-row justify-center space-x-4 mb-8 gap-2 space-y-2">
-              {otp.map((digit, index) => (
-                <TextInput
-                  key={index}
-                  ref={(ref) => (inputRefs.current[index] = ref as TextInput)}
-                  className="w-12 h-12 border-2 border-gray-300 rounded-lg text-center text-xl"
-                  value={digit}
-                  onChangeText={(text) => handleOtpChange(text, index)}
-                  onKeyPress={(e) => handleKeyPress(e, index)}
-                  keyboardType="number-pad"
-                  maxLength={6}
-                  selectTextOnFocus
-                />
-              ))}
+              <View style={styles.otpContainer}>
+                {otp.map((digit, index) => (
+                  <TextInput
+                    key={index}
+                    ref={(ref) => {
+                      if (ref) {
+                        inputRefs.current[index] = ref;
+                      }
+                    }}
+                    style={[
+                      styles.otpInput,
+                      focusedIndex === index && styles.otpInputFocused,
+                    ]}
+                    value={digit}
+                    onChangeText={(text) => handleOtpChange(text, index)}
+                    onKeyPress={(e) => handleKeyPress(e, index)}
+                    onFocus={() => setFocusedIndex(index)}
+                    onBlur={() => setFocusedIndex(-1)}
+                    keyboardType="number-pad"
+                    maxLength={1}
+                    selectTextOnFocus
+                  />
+                ))}
+              </View>
             </View>
 
-            <TouchableOpacity
-              onPress={handlePasteButton}
-              className="mb-4"
-            >
-              <Text className="text-red-500 text-center">Paste Code</Text>
-            </TouchableOpacity>
-
-            <Button
-              variant="primary"
-              className="bg-red-500 py-4 rounded-full mb-4"
-              onPress={handleVerify}
-              disabled={otp.join('').length !== 6}
-              loading={isPending}
-              loadingText="Verifying..."
-            >
-              <Text className="text-white text-center text-lg font-medium">
-                Verify
-              </Text>
-            </Button>
-
-            <View className="flex-row justify-center">
-              <Text className="text-gray-600">Didn't receive the code? </Text>
-              <TouchableOpacity onPress={handleResend}>
-                <Text className="text-red-500">Resend</Text>
+            <View style={styles.actionsContainer}>
+              <TouchableOpacity
+                onPress={handleResend}
+                disabled={isPendingResend}
+              >
+                <Text style={styles.linkText}>Paste Code</Text>
               </TouchableOpacity>
+
+              <Button
+                title="Verify"
+                onPress={handleVerify}
+                disabled={otp.join("").length !== 6 || isPending}
+                loading={isPending}
+                loadingText="Verifying..."
+              />
+
+              <Text style={styles.resendText}>
+                Didn't receive the code?{" "}
+                <Text style={styles.linkText}>Resend</Text>
+              </Text>
             </View>
           </View>
-        </View>
-      </KeyboardAvoidingView>
-
-      <Modal
-        visible={isPendingResend}
-        transparent
-        animationType="fade"
-      >
-        <View className="flex-1 justify-center items-center bg-black/50">
-          <View className="bg-white p-6 rounded-lg items-center">
-            <ActivityIndicator size="large" color="#C33A31" />
-            <Text className="mt-4 text-gray-700">Resending verification code...</Text>
-          </View>
-        </View>
-      </Modal>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+  content: {
+    flex: 1,
+    justifyContent: "space-around",
+    paddingHorizontal: SIZES.base * 3,
+  },
+  title: {
+    ...FONTS.h2,
+    textAlign: "center",
+    marginBottom: SIZES.base,
+    color: COLORS.secondary,
+  },
+  subtitle: {
+    ...FONTS.body,
+    textAlign: "center",
+    color: COLORS.grey,
+    paddingHorizontal: SIZES.base * 2,
+  },
+  centerContainer: {
+    gap: SIZES.base * 4,
+    marginTop: SIZES.base * 2,
+    flex: 2,
+    justifyContent: "center",
+  },
+  otpContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  otpInput: {
+    width: 48,
+    height: 48,
+    borderWidth: 1,
+    borderColor: COLORS.lightBorder,
+    backgroundColor: COLORS.lightGrey,
+    borderRadius: SIZES.radius,
+    textAlign: "center",
+    ...FONTS.h2,
+    color: COLORS.secondary,
+  },
+  otpInputFocused: {
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.white,
+  },
+  actionsContainer: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "flex-end",
+    marginTop: SIZES.base * 2,
+  },
+  linkText: {
+    ...FONTS.body,
+    fontWeight: "600",
+    color: COLORS.primary,
+    paddingVertical: SIZES.base,
+  },
+  resendContainer: {
+    flexDirection: "row",
+    marginTop: SIZES.base * 2,
+  },
+  resendText: {
+    ...FONTS.body,
+    color: COLORS.grey,
+    textAlign: "center",
+    marginTop: SIZES.base * 1,
+  },
+});
