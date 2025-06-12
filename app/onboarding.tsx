@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
@@ -16,10 +15,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "@/components/button/button";
-import { SIGN_IN_URL } from "@/config/routes";
 import { SlideItem } from "@/config/types";
 import { COLORS, FONTS, SIZES } from "@/constants/theme";
 import { slides } from "@/data";
+import { useOnboarding } from "@/providers/onboarding-context";
 
 const { width, height } = Dimensions.get("window");
 
@@ -111,6 +110,7 @@ export default function OnboardingScreen() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const router = useRouter();
+  const { setIsOnboarded } = useOnboarding();
 
   const goToNextSlide = () => {
     if (currentSlideIndex < slides.length - 1) {
@@ -128,10 +128,11 @@ export default function OnboardingScreen() {
 
   const completeOnboarding = async () => {
     try {
-      await AsyncStorage.setItem("isOnboarded", "true");
-      router.replace(SIGN_IN_URL);
+      setIsOnboarded(true);
+      console.log("Onboarding completed, navigating to sign in...");
+      router.replace("/auth/sign-in");
     } catch (error) {
-      console.error("Error setting onboarding status:", error);
+      console.error("Error during onboarding completion:", error);
     }
   };
 

@@ -1,5 +1,5 @@
-import { authService } from '@/services/auth.service';
-import React, { createContext, useContext } from 'react';
+import { authService } from "@/services/auth.service";
+import React, { createContext, useContext } from "react";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -22,15 +22,35 @@ function useAuthState() {
       const token = await authService.loadToken();
       setIsAuthenticated(!!token);
     } catch (error) {
-      console.error('Error loading token:', error);
+      console.error("Error loading token:", error);
+      setIsAuthenticated(false);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleSetIsAuthenticated = async (value: boolean) => {
+    try {
+      if (value) {
+        // If setting to authenticated, ensure token exists
+        const token = await authService.loadToken();
+        if (!token) {
+          throw new Error("No token found");
+        }
+      } else {
+        // If setting to unauthenticated, clear token
+        await authService.signOut();
+      }
+      setIsAuthenticated(value);
+    } catch (error) {
+      console.error("Error updating auth state:", error);
+      setIsAuthenticated(false);
+    }
+  };
+
   return {
     isAuthenticated,
-    setIsAuthenticated,
+    setIsAuthenticated: handleSetIsAuthenticated,
     isLoading,
   };
 }
@@ -43,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
