@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/providers/auth-context";
+import { AuthProvider, useAuth } from "@/providers/auth-context";
 import {
   OnboardingProvider,
   useOnboarding,
@@ -13,19 +13,26 @@ import "./global.css";
 SplashScreen.preventAutoHideAsync();
 
 function AppStack() {
-  const { isOnboarded, isLoading } = useOnboarding();
+  const { isOnboarded, isLoading: isOnboardingLoading } = useOnboarding();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+
+  const isLoading = isOnboardingLoading || isAuthLoading;
 
   if (isLoading) return null;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      {/* Main app for onboarded users */}
-      <Stack.Protected guard={isOnboarded}>
-        <Stack.Screen name="(root)" options={{ headerShown: false }} />
+      {/* Main app for authenticated and onboarded users */}
+      <Stack.Protected guard={isAuthenticated && isOnboarded}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack.Protected>
       {/* Onboarding for users who haven't onboarded */}
       <Stack.Protected guard={!isOnboarded}>
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+      </Stack.Protected>
+      {/* Login for onboarded but not authenticated users */}
+      <Stack.Protected guard={isOnboarded && !isAuthenticated}>
+        <Stack.Screen name="auth/sign-in" options={{ headerShown: false }} />
       </Stack.Protected>
     </Stack>
   );

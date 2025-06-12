@@ -1,5 +1,5 @@
 import { COLORS, FONTS, SIZES } from "@/constants/theme";
-import { Eye, EyeOff } from "lucide-react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
   NativeSyntheticEvent,
@@ -91,9 +91,13 @@ const FormField: React.FC<FormFieldProps> = ({
         {isPassword ? (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             {showPassword ? (
-              <EyeOff size={24} color={COLORS.grey} />
+              <MaterialIcons
+                name="visibility-off"
+                size={24}
+                color={COLORS.grey}
+              />
             ) : (
-              <Eye size={24} color={COLORS.grey} />
+              <MaterialIcons name="visibility" size={24} color={COLORS.grey} />
             )}
           </TouchableOpacity>
         ) : rightIcon ? (

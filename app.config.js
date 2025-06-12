@@ -14,19 +14,22 @@ module.exports = {
     assetBundlePatterns: ["**/*"],
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.nnamdi.azubuike.empresos",
+      bundleIdentifier: "com.empresos.app",
     },
     android: {
       adaptiveIcon: {
         // foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff",
       },
-      package: "com.nnamdi.azubuike.empresos",
+      package: "com.empresos.app",
     },
     web: {
       favicon: "./assets/favicon.png",
     },
     extra: {
+      eas: {
+        projectId: "8c03ffcf-5daa-4a65-965d-10f2964cb8ff",
+      },
       BASE_URL:
         process.env.BASE_URL || "https://empresos-backend.onrender.com/api/v1",
     },

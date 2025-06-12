@@ -1,7 +1,14 @@
-import { FormFieldProps } from '@/config/types';
-import { Eye, EyeOff } from 'lucide-react-native';
-import React, { useRef, useState } from 'react';
-import { NativeSyntheticEvent, Text, TextInput, TextInputFocusEventData, TouchableOpacity, View } from 'react-native';
+import { FormFieldProps } from "@/config/types";
+import { MaterialIcons } from "@expo/vector-icons";
+import React, { useRef, useState } from "react";
+import {
+  NativeSyntheticEvent,
+  Text,
+  TextInput,
+  TextInputFocusEventData,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const FormField: React.FC<FormFieldProps> = ({
   title,
@@ -50,17 +57,18 @@ const FormField: React.FC<FormFieldProps> = ({
       </Text>
 
       <View
-        className={`flex-row items-center border-2 ${error ? 'border-red-500' : isFocused ? 'border-blue-500' : 'border-gray-200'
-          } w-full h-16 px-4 bg-gray-100 rounded-2xl focus:border-secondary items-center`}
+        className={`flex-row items-center border-2 ${
+          error
+            ? "border-red-500"
+            : isFocused
+            ? "border-blue-500"
+            : "border-gray-200"
+        } w-full h-16 px-4 bg-gray-100 rounded-2xl focus:border-secondary items-center`}
         accessible={true}
         accessibilityLabel={accessibilityLabel || title}
         testID={testID}
       >
-        {leftIcon && (
-          <View className="mr-2">
-            {leftIcon}
-          </View>
-        )}
+        {leftIcon && <View className="mr-2">{leftIcon}</View>}
         <TextInput
           ref={inputRef}
           className="flex-1 text-black font-semibold text-base"
@@ -83,21 +91,19 @@ const FormField: React.FC<FormFieldProps> = ({
             onPress={() => setShowPassword(!showPassword)}
             className="ml-2"
             accessible={true}
-            accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+            accessibilityLabel={
+              showPassword ? "Hide password" : "Show password"
+            }
             accessibilityRole="button"
           >
             {showPassword ? (
-              <EyeOff size={24} color="#7B7B8B" />
+              <MaterialIcons name="visibility-off" size={24} color="#7B7B8B" />
             ) : (
-              <Eye size={24} color="#7B7B8B" />
+              <MaterialIcons name="visibility" size={24} color="#7B7B8B" />
             )}
           </TouchableOpacity>
         )}
-        {rightIcon && !isPassword && (
-          <View className="ml-2">
-            {rightIcon}
-          </View>
-        )}
+        {rightIcon && !isPassword && <View className="ml-2">{rightIcon}</View>}
       </View>
 
       {helperText && !error && (
@@ -123,4 +129,4 @@ const FormField: React.FC<FormFieldProps> = ({
   );
 };
 
-export default FormField; 
+export default FormField;

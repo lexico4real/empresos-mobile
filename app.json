@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.nnamdi.azubuike.empresos",
+      "bundleIdentifier": "com.empresos.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -25,7 +25,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.nnamdi.azubuike.empresos"
+      "package": "com.empresos.app"
     },
     "web": {
       "bundler": "metro",
@@ -52,9 +52,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "d6671304-2b2c-4874-8db1-4b3939df468f"
+        "projectId": "8c03ffcf-5daa-4a65-965d-10f2964cb8ff"
       }
     },
-    "owner": "lexico4real"
+    "owner": "mrelijah042"
   }
 }

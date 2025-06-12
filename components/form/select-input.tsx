@@ -1,5 +1,5 @@
 import { COLORS, FONTS, SIZES } from "@/constants/theme";
-import { ChevronDown } from "lucide-react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -84,17 +84,19 @@ export default function SelectInput({
         textStyle={selectedValue ? styles.selectedText : styles.placeholderText}
         placeholderStyle={styles.placeholderText}
         ArrowDownIconComponent={() => (
-          <ChevronDown
+          <MaterialIcons
+            name="keyboard-arrow-down"
             size={20}
             color={chevronColor}
             style={styles.chevronIcon}
           />
         )}
         ArrowUpIconComponent={() => (
-          <ChevronDown
+          <MaterialIcons
+            name="keyboard-arrow-up"
             size={20}
             color={chevronColor}
-            style={[styles.chevronIcon, { transform: [{ rotate: "180deg" }] }]}
+            style={styles.chevronIcon}
           />
         )}
         onOpen={() => setIsFocused(true)}

@@ -27,7 +27,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.nnamdi.azubuike.empresos</string>
+          <string>com.empresos.app</string>
         </array>
       </dict>
     </array>
