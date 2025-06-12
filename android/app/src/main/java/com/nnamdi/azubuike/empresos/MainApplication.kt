@@ -1,4 +1,4 @@
-package com.nnamdi.azubuike.empresos
+package com.empresos.app
 
 import android.app.Application
 import android.content.res.Configuration

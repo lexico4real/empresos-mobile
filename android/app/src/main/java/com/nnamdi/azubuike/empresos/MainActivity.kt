@@ -1,4 +1,4 @@
-package com.nnamdi.azubuike.empresos
+package com.empresos.app
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
