@@ -16,12 +16,14 @@ const menuData = [
     icon: "person-outline",
     title: "Contact details",
     subtitle: "Add photo, email, phone and addresses",
+    route: "/profile/contact-details",
   },
   {
     type: "item",
     icon: "settings-outline",
     title: "Configuration",
     subtitle: "Personalise and set up the Bank's app",
+    route: "/profile/configuration",
   },
   // {
   //   type: "sub-item",
@@ -33,6 +35,7 @@ const menuData = [
     icon: "lock-closed-outline",
     title: "Security and privacy",
     subtitle: "You can feel totally confident about security",
+    route: "/profile/security",
   },
   {
     type: "item",
@@ -64,7 +67,7 @@ export default function PersonalAreaScreen() {
   const handleSignOut = async () => {
     await authService.signOut();
     setIsAuthenticated(false);
-    router.push(SIGN_IN_URL);
+    router.replace(SIGN_IN_URL);
   };
 
   return (
@@ -99,7 +102,7 @@ export default function PersonalAreaScreen() {
                   if (item.title === "Logout") {
                     handleSignOut();
                   } else {
-                    console.log(`Pressed ${item.title}`);
+                    router.push(item.route as any);
                   }
                 }}
               />
