@@ -1,6 +1,7 @@
+import CustomDrawerContent from "@/components/nav/drawer-content";
 import { useAuth } from "@/providers/auth-context";
 import { authService } from "@/services/auth.service";
-import { Slot, Stack } from "expo-router";
+import { Drawer } from "expo-router/drawer";
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 
@@ -15,17 +16,23 @@ export default function RootLayout() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center">
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#C33A31" />
       </View>
     );
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={isAuthenticated}>
-        <Slot />
-      </Stack.Protected>
-    </Stack>
+    <Drawer
+      drawerContent={(props: any) => <CustomDrawerContent {...props} />}
+      screenOptions={{
+        headerShown: false,
+        drawerPosition: "right",
+        swipeEnabled: true,
+        drawerStyle: {
+          width: "85%",
+        },
+      }}
+    />
   );
 }

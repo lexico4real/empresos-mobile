@@ -5,7 +5,7 @@ import { COLORS, FONTS, SIZES } from "@/constants/theme";
 import useGetTransactionTotal from "@/hooks/query/useGetTransactionTotal";
 import { useUserStore } from "@/store/userStore";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
   Dimensions,
@@ -24,6 +24,7 @@ export default function IndexScreen() {
   const { user } = useUserStore();
   const { data: transactionData, isLoading: isLoadingTransactions } =
     useGetTransactionTotal();
+  const navigation = useNavigation();
 
   const [accountsOpen, setAccountsOpen] = useState(true);
   const [creditCardOpen, setCreditCardOpen] = useState(true);
@@ -106,7 +107,7 @@ export default function IndexScreen() {
         style={styles.banner}
       >
         <HomeHeader
-          onMenuPress={() => {}}
+          onMenuPress={() => (navigation as any).openDrawer()}
           onSearchPress={() => {}}
           onMailPress={() => router.push("/(root)/mailbox")}
         />

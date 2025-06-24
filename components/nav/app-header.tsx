@@ -1,6 +1,6 @@
 import MenuSvg from "@/assets/svgs/menu-svg";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import React from "react";
 import {
   SafeAreaView,
@@ -16,6 +16,7 @@ interface AppHeaderProps {
 
 export default function AppHeader({ title }: AppHeaderProps) {
   const router = useRouter();
+  const navigation = useNavigation();
   const canGoBack = router.canGoBack();
 
   const onBackPress = () => {
@@ -39,7 +40,7 @@ export default function AppHeader({ title }: AppHeaderProps) {
           <TouchableOpacity>
             <Ionicons name="help-circle-outline" size={24} color="#E30600" />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => (navigation as any).openDrawer()}>
             <MenuSvg />
           </TouchableOpacity>
         </View>
