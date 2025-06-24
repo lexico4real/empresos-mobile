@@ -186,7 +186,10 @@ export default function IndexScreen() {
       </View>
 
       {/* --- FINANCING BANNER --- */}
-      <TouchableOpacity style={styles.improveBanner}>
+      <TouchableOpacity
+        style={styles.improveBanner}
+        onPress={() => router.push("/(root)/financing")}
+      >
         <Ionicons name="wallet-outline" size={24} color={COLORS.white} />
         <View style={styles.improveBannerTextWrapper}>
           <Text style={styles.improveBannerText}>
