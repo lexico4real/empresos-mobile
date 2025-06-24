@@ -85,8 +85,16 @@ export default function IndexScreen() {
       text: "Personal area",
       onPress: () => router.push(PROFILE_URL),
     },
-    { icon: "document-text", text: "View bills", onPress: () => {} },
-    { icon: "apps", text: "Explore", onPress: () => {} },
+    {
+      icon: "document-text",
+      text: "View bills",
+      onPress: () => router.push("/(root)/bills"),
+    },
+    {
+      icon: "apps",
+      text: "Explore",
+      onPress: () => {},
+    },
   ];
 
   return (
@@ -100,7 +108,7 @@ export default function IndexScreen() {
         <HomeHeader
           onMenuPress={() => {}}
           onSearchPress={() => {}}
-          onMailPress={() => {}}
+          onMailPress={() => router.push("/(root)/mailbox")}
         />
 
         <Text style={styles.welcomeText}>Hello, {user?.firstName}</Text>
